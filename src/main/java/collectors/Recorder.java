@@ -179,7 +179,7 @@ public class Recorder {
                         "%d; %d; %.4f; " +
                         "%.4f; %.4e; %.2f; %.2f; %.2f; %.4f; %d; %d; %d; %d; %d; %d; %d; %d; %d; %d; " +
                         "%.4f; %.4e; %.2f; %.2f; %.2f; %.4f; %d; %d; %d; %.4f; " +
-                        "%d; %d; %d; %d; %d; %.2f; %.2f; %.2f; %.2f; %.6f", time,
+                        "%d; %d; %d; %d; %d; %.2f; %.2f; %.2f; %.2f; %.2f; %.6f", time,
                 // Number of households of each type
                 Model.householdStats.getnNonBTLHomeless(),
                 Model.householdStats.getnBTLHomeless(),
