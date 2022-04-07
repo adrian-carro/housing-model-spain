@@ -31,6 +31,8 @@ public class HouseholdBehaviour {
             config.DOWNPAYMENT_FTB_SCALE, config.DOWNPAYMENT_FTB_SHAPE); // Size distribution for downpayments of first-time-buyers
     private static LogNormalDistribution    downpaymentDistOO = new LogNormalDistribution(prng,
             config.DOWNPAYMENT_OO_SCALE, config.DOWNPAYMENT_OO_SHAPE); // Size distribution for downpayments of owner-occupiers
+    private static LogNormalDistribution    downpaymentDistBTL = new LogNormalDistribution(prng,
+            config.DOWNPAYMENT_BTL_SCALE, config.DOWNPAYMENT_BTL_SHAPE); // Size distribution for downpayments of buy-to-let investors
     private static BinnedDataDouble         BTLProbability = new BinnedDataDouble(config.DATA_BTL_PROBABILITY);
     private boolean                         BTLInvestor;
     private double                          BTLCapGainCoefficient; // Sensitivity of BTL investors to capital gain, 0.0 cares only about rental yield, 1.0 cares only about cap gain
@@ -197,8 +199,11 @@ public class HouseholdBehaviour {
 //            downpayment = housingMarketStats.getHPI()
 //                    * downpaymentDistFTB.inverseCumulativeProbability(me.incomePercentile);
         } else if (!isHome) {
-            downpayment = housePrice*(Math.max(0.0,
-                    config.DOWNPAYMENT_BTL_MEAN + config.DOWNPAYMENT_BTL_EPSILON * prng.nextGaussian()));
+//            TODO: Decide between old normal LTV mechanism and new log-normal down-payment mechanism (as for HMs)
+//            downpayment = housePrice*(Math.max(0.0,
+//                    config.DOWNPAYMENT_BTL_MEAN + config.DOWNPAYMENT_BTL_EPSILON * prng.nextGaussian()));
+            downpayment = housingMarketStats.getHPI()
+                    * downpaymentDistBTL.inverseCumulativeProbability(me.incomePercentile);
         } else {
             downpayment = housingMarketStats.getHPI()
                     * downpaymentDistOO.inverseCumulativeProbability(me.incomePercentile);
