@@ -1,5 +1,7 @@
 package housing;
 
+import org.apache.commons.math3.random.MersenneTwister;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,8 +20,9 @@ public class Bank {
     //------------------//
 
     // General fields
-    private Config              config = Model.config;      // Passes the Model's configuration parameters object to a private field
-    private CentralBank         centralBank;                // Connection to the central bank to ask for policy
+    private Config                  config = Model.config;  // Passes the Model's configuration parameters object to a private field
+    private static MersenneTwister  prng = Model.prng;      // Passes the Model's random number generator to a private static field
+    private CentralBank             centralBank;            // Connection to the central bank to ask for policy
 
     // Bank fields
     public HashSet<MortgageAgreement>   mortgages;                  // All unpaid mortgage contracts supplied by the bank
@@ -50,9 +53,15 @@ public class Bank {
     private double              monthlyCreditSupplyOld;     // Previous value of monthly supply of mortgage lending (pounds)
 
     // LTV internal policy thresholds
-    private double              firstTimeBuyerHardMaxLTV;   // Loan-To-Value hard maximum for first-time buyer mortgages
-    private double              homeMoverHardMaxLTV;        // Loan-To-Value hard maximum for home mover mortgages
-    private double              buyToLetHardMaxLTV;         // Loan-To-Value hard maximum for buy-to-let mortgages
+    private double              firstTimeBuyerHardMaxLTV;           // Loan-To-Value hard maximum for first-time buyer mortgages
+    private double              firstTimeBuyerSoftMaxLTV;           // Loan-To-Value soft maximum for first-time buyer mortgages
+    private double              firstTimeBuyerFracOverSoftMaxLTV;   // Loan-To-Value fraction over soft maximum for first-time buyer mortgages
+    private double              homeMoverHardMaxLTV;                // Loan-To-Value hard maximum for home mover mortgages
+    private double              homeMoverSoftMaxLTV;                // Loan-To-Value soft maximum for home mover mortgages
+    private double              homeMoverFracOverSoftMaxLTV;        // Loan-To-Value fraction over soft maximum for home mover mortgages
+    private double              buyToLetHardMaxLTV;                 // Loan-To-Value hard maximum for buy-to-let mortgages
+    private double              buyToLetSoftMaxLTV;                 // Loan-To-Value soft maximum for buy-to-let mortgages
+    private double              buyToLetFracOverSoftMaxLTV;         // Loan-To-Value fraction over soft maximum for buy-to-let mortgages
 
     // LTI internal policy thresholds
     private double              firstTimeBuyerHardMaxLTI;   // Loan-To-Income hard maximum for first-time buyer mortgages
@@ -89,8 +98,14 @@ public class Bank {
         monthlyCreditSupplyOld = config.BANK_INITIAL_CREDIT_SUPPLY * config.TARGET_POPULATION;
         // Setup initial LTV internal policy thresholds
         firstTimeBuyerHardMaxLTV = config.BANK_LTV_HARD_MAX_FTB;
+        firstTimeBuyerSoftMaxLTV = config.BANK_LTV_SOFT_MAX_FTB;
+        firstTimeBuyerFracOverSoftMaxLTV = config.BANK_LTV_FRAC_OVER_SOFT_MAX_FTB;
         homeMoverHardMaxLTV = config.BANK_LTV_HARD_MAX_HM;
+        homeMoverSoftMaxLTV = config.BANK_LTV_SOFT_MAX_HM;
+        homeMoverFracOverSoftMaxLTV = config.BANK_LTV_FRAC_OVER_SOFT_MAX_HM;
         buyToLetHardMaxLTV = config.BANK_LTV_HARD_MAX_BTL;
+        buyToLetSoftMaxLTV = config.BANK_LTV_SOFT_MAX_BTL;
+        buyToLetFracOverSoftMaxLTV = config.BANK_LTV_FRAC_OVER_SOFT_MAX_BTL;
         // Setup initial LTI internal policy thresholds
         firstTimeBuyerHardMaxLTI = config.BANK_LTI_HARD_MAX_FTB;
         homeMoverHardMaxLTI = config.BANK_LTI_HARD_MAX_HM;
@@ -342,7 +357,8 @@ public class Bank {
 
         // Loan-To-Value (LTV) constraint: it sets a maximum value for the ratio of the principal divided by the house
         // price
-        approval.principal = housePrice * getLoanToValueLimit(h.isFirstTimeBuyer(), isHome);
+        approval.principal = housePrice;
+//        approval.principal = housePrice * getLoanToValueLimit(h.isFirstTimeBuyer(), isHome);
 
         if (getNPayments(isHome, h.getAge()) > 0) {
 
@@ -504,6 +520,42 @@ public class Bank {
      * @return The Loan-To-Value ratio limit applicable to this type of household
      */
     private double getLoanToValueLimit(boolean isFirstTimeBuyer, boolean isHome) {
+        if (isHome) {
+            if (isFirstTimeBuyer) {
+                if (prng.nextDouble() < firstTimeBuyerFracOverSoftMaxLTV) {
+                    return Math.min(firstTimeBuyerSoftMaxLTV + (1.0 - firstTimeBuyerSoftMaxLTV) * prng.nextDouble(),
+                            centralBank.getFirstTimeBuyerHardMaxLTV());
+                } else {
+                    return Math.min(firstTimeBuyerSoftMaxLTV, centralBank.getFirstTimeBuyerHardMaxLTV());
+                }
+            } else {
+                if (prng.nextDouble() < homeMoverFracOverSoftMaxLTV) {
+                    return Math.min(homeMoverSoftMaxLTV + (1.0 - homeMoverSoftMaxLTV) * prng.nextDouble(),
+                            centralBank.getHomeMoverHardMaxLTV());
+                } else {
+                    return Math.min(homeMoverSoftMaxLTV, centralBank.getHomeMoverHardMaxLTV());
+                }
+            }
+        } else {
+            if (prng.nextDouble() < buyToLetFracOverSoftMaxLTV) {
+                return Math.min(buyToLetSoftMaxLTV + (1.0 - buyToLetSoftMaxLTV) * prng.nextDouble(),
+                        centralBank.getBuyToLetHardMaxLTV());
+            } else {
+                return Math.min(buyToLetSoftMaxLTV, centralBank.getBuyToLetHardMaxLTV());
+            }
+        }
+    }
+
+    /**
+     * Get the Loan-To-Value ratio limit currently applicable to a given type of household (first-time buyer, home mover
+     * or buy-to-let investor). Note that this limit is defined as the minimum between the private bank self-imposed
+     * internal policy limit and the central bank mandatory policy limit.
+     *
+     * @param isFirstTimeBuyer True if the household is a first-time buyer
+     * @param isHome True if the mortgage is to buy a home for the household (non-BTL mortgage)
+     * @return The Loan-To-Value ratio limit applicable to this type of household
+     */
+    private double getLoanToValueLimitOld(boolean isFirstTimeBuyer, boolean isHome) {
         if (isHome) {
             if (isFirstTimeBuyer) {
                 return Math.min(firstTimeBuyerHardMaxLTV, centralBank.getFirstTimeBuyerHardMaxLTV());

@@ -144,8 +144,14 @@ public class Config {
     double BANK_INITIAL_CREDIT_SUPPLY;      // Private bank's initial supply of credit per household per month
     double BANK_D_INTEREST_D_DEMAND;        // Rate of change of the interest rate in response to a change in the demand for credit per household per month (in points per pound per household per month)
     double BANK_LTV_HARD_MAX_FTB;           // Internal private bank policy: Hard maximum LTV ratio for first-time buyers
+    double BANK_LTV_SOFT_MAX_FTB;           // Internal private bank policy: Soft maximum LTV ratio for first-time buyers
+    double BANK_LTV_FRAC_OVER_SOFT_MAX_FTB; // Internal private bank policy: Fraction of mortgages offered with LTV over the soft maximum ratio for first-time buyers
     double BANK_LTV_HARD_MAX_HM;            // Internal private bank policy: Hard maximum LTV ratio for home movers
+    double BANK_LTV_SOFT_MAX_HM;            // Internal private bank policy: Soft maximum LTV ratio for home movers
+    double BANK_LTV_FRAC_OVER_SOFT_MAX_HM;  // Internal private bank policy: Fraction of mortgages offered with LTV over the soft maximum ratio for home movers
     double BANK_LTV_HARD_MAX_BTL;           // Internal private bank policy: Hard maximum LTV ratio for BTL investors
+    double BANK_LTV_SOFT_MAX_BTL;           // Internal private bank policy: Soft maximum LTV ratio for BTL investors
+    double BANK_LTV_FRAC_OVER_SOFT_MAX_BTL; // Internal private bank policy: Fraction of mortgages offered with LTV over the soft maximum ratio for BTL investors
     double BANK_LTI_HARD_MAX_FTB;           // Internal private bank policy: Hard maximum LTI ratio for first-time-buyers
     double BANK_LTI_HARD_MAX_HM;            // Internal private bank policy: Hard maximum LTI ratio for home movers
     double BANK_AFFORDABILITY_HARD_MAX;     // Internal private bank policy: Hard maximum fraction of household's income to be spent on mortgage repayments
