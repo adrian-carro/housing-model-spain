@@ -40,7 +40,7 @@ public class TransactionRecorder {
                 outfileSaleTransactions.print("modelTime; "
                         + "houseId; houseQuality; initialListedPrice; timeFirstOffered; transactionPrice; buyerId;"
                         + "buyerAge; buyerHasBTLGene; buyerMonthlyGrossTotalIncome; buyerMonthlyGrossEmploymentIncome; "
-                        + "buyerMonthlyNetEmploymentIncome; desiredPurchasePrice; buyerPostPurchaseBankBalance; "
+                        + "desiredPurchasePrice; buyerPostPurchaseBankBalance; "
                         + "buyerCapGainCoeff; mortgageDownpayment; mortgagePrincipal; mortgageMonthlyPayment; "
                         + "annualInterestRate; ICR; maturity; "
                         + "firstTimeBuyerMortgage; buyToLetMortgage; sellerId; sellerAge; sellerHasBTLGene; "
@@ -97,7 +97,7 @@ public class TransactionRecorder {
             ICR = Double.NaN;
         }
         outfileSaleTransactions.format(Locale.ROOT, "%n%d; ", Model.getTime());
-        outfileSaleTransactions.format(Locale.ROOT, "%d; %d; %.2f; %d; %.2f; %d; %.2f; %b; %.2f; %.2f; %.2f; %.2f; "
+        outfileSaleTransactions.format(Locale.ROOT, "%d; %d; %.2f; %d; %.2f; %d; %.2f; %b; %.2f; %.2f; %.2f; "
                         + "%.2f; %.2f; %.2f; %.2f; %.2f; %.4f; %.2f; %d; %b; %b; ",
                 sale.getHouse().id,
                 sale.getHouse().getQuality(),
@@ -109,7 +109,6 @@ public class TransactionRecorder {
                 purchase.getBidder().behaviour.isPropertyInvestor(),
                 purchase.getBidder().getMonthlyGrossTotalIncome(),
                 purchase.getBidder().getMonthlyGrossEmploymentIncome(),
-                purchase.getBidder().getMonthlyNetEmploymentIncome(),
                 purchase.getBidder().getDesiredPurchasePrice(),
                 purchase.getBidder().getBankBalance(),
                 purchase.getBidder().behaviour.getBTLCapGainCoefficient(),

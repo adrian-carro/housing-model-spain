@@ -70,13 +70,14 @@ public class CoreIndicators {
      * percentage of the annualised net total income (i.e., 12 times the current monthly net total income, thus
      * including employment and rental income) of the whole household sector (i.e., buy-to-let investors,
      * owner-occupiers, renters and homeless households).
+     * TODO: Definitions to be updated, as gross income is used now instead of net income
      */
     double getMortgageDebtToIncome() {
         return 100.0 * (Model.creditSupply.getTotalBTLCredit() + Model.creditSupply.getTotalOOCredit())
-                / (Model.householdStats.getOwnerOccupierAnnualisedNetTotalIncome()
-                + Model.householdStats.getActiveBTLAnnualisedNetTotalIncome()
-                + Model.householdStats.getRentingAnnualisedNetTotalIncome()
-                + Model.householdStats.getHomelessAnnualisedNetTotalIncome());
+                / (Model.householdStats.getOwnerOccupierAnnualisedGrossTotalIncome()
+                + Model.householdStats.getActiveBTLAnnualisedGrossTotalIncome()
+                + Model.householdStats.getRentingAnnualisedGrossTotalIncome()
+                + Model.householdStats.getHomelessAnnualisedGrossTotalIncome());
     }
 
     /**
@@ -85,13 +86,14 @@ public class CoreIndicators {
      * Total stock of owner-occupying mortgage credit as a percentage of the annualised net total income (i.e., 12 times
      * the current monthly net total income, thus including employment and rental income) of the whole household sector
      * (i.e., buy-to-let investors, owner-occupiers, renters and homeless households).
+     * TODO: Definitions to be updated, as gross income is used now instead of net income
      */
     double getOOMortgageDebtToIncome() {
         return 100.0 * Model.creditSupply.getTotalOOCredit()
-                / (Model.householdStats.getOwnerOccupierAnnualisedNetTotalIncome()
-                + Model.householdStats.getActiveBTLAnnualisedNetTotalIncome()
-                + Model.householdStats.getRentingAnnualisedNetTotalIncome()
-                + Model.householdStats.getHomelessAnnualisedNetTotalIncome());
+                / (Model.householdStats.getOwnerOccupierAnnualisedGrossTotalIncome()
+                + Model.householdStats.getActiveBTLAnnualisedGrossTotalIncome()
+                + Model.householdStats.getRentingAnnualisedGrossTotalIncome()
+                + Model.householdStats.getHomelessAnnualisedGrossTotalIncome());
     }
 
     //----------------------------- Conditions and terms in markets -----------------------------//
@@ -167,13 +169,14 @@ public class CoreIndicators {
      * average house price (derived from data), rather than directly the current average house price. Regarding the
      * average household income, we use the annualised net total income, averaged over the whole household sector, that
      * is, over active buy-to-let investors, owner-occupying households, renters and homeless households.
+     * TODO: Definitions to be updated, as gross income is used now instead of net income
      */
     double getPriceToIncome() {
         return Model.housingMarketStats.getHPI() * config.derivedParams.HOUSE_PRICES_MEAN * Model.households.size()
-                / (Model.householdStats.getActiveBTLAnnualisedNetTotalIncome()
-                + Model.householdStats.getOwnerOccupierAnnualisedNetTotalIncome()
-                + Model.householdStats.getRentingAnnualisedNetTotalIncome()
-                + Model.householdStats.getHomelessAnnualisedNetTotalIncome());
+                / (Model.householdStats.getActiveBTLAnnualisedGrossTotalIncome()
+                + Model.householdStats.getOwnerOccupierAnnualisedGrossTotalIncome()
+                + Model.householdStats.getRentingAnnualisedGrossTotalIncome()
+                + Model.householdStats.getHomelessAnnualisedGrossTotalIncome());
     }
 
     /**

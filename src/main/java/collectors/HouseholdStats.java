@@ -30,11 +30,11 @@ public class HouseholdStats {
     private int     nNonBTLHomeless; // Number of homeless non-BTL households
     private int     nNonBTLBankruptcies; // Number of non-BTL households going bankrupt in a given time step
 
-    // Fields for summing annualised net total incomes
-    private double  activeBTLAnnualisedNetTotalIncome;
-    private double  ownerOccupierAnnualisedNetTotalIncome;
-    private double  rentingAnnualisedNetTotalIncome;
-    private double  homelessAnnualisedNetTotalIncome;
+    // Fields for summing annualised gross total incomes
+    private double  activeBTLAnnualisedGrossTotalIncome;
+    private double  ownerOccupierAnnualisedGrossTotalIncome;
+    private double  rentingAnnualisedGrossTotalIncome;
+    private double  homelessAnnualisedGrossTotalIncome;
 
     // Other fields
     private double  sumStockYield; // Sum of stock gross rental yields of all currently occupied rental properties
@@ -66,10 +66,10 @@ public class HouseholdStats {
         nRenting = 0;
         nNonBTLHomeless = 0;
         nNonBTLBankruptcies = 0;
-        activeBTLAnnualisedNetTotalIncome = 0.0;
-        ownerOccupierAnnualisedNetTotalIncome = 0.0;
-        rentingAnnualisedNetTotalIncome = 0.0;
-        homelessAnnualisedNetTotalIncome = 0.0;
+        activeBTLAnnualisedGrossTotalIncome = 0.0;
+        ownerOccupierAnnualisedGrossTotalIncome = 0.0;
+        rentingAnnualisedGrossTotalIncome = 0.0;
+        homelessAnnualisedGrossTotalIncome = 0.0;
         sumStockYield = 0.0;
         // Time stamp householdStats microDataRecorders
         Model.microDataRecorder.timeStampSingleRunSingleVariableFiles(Model.getTime(), config.recordHouseholdID,
@@ -83,26 +83,26 @@ public class HouseholdStats {
                 // Active BTL investors
                 if (h.getNProperties() > 1) {
                     ++nActiveBTL;
-                    activeBTLAnnualisedNetTotalIncome += h.getMonthlyNetTotalIncome();
+                    activeBTLAnnualisedGrossTotalIncome += h.getMonthlyGrossTotalIncome();
                 // Inactive BTL investors who own their house
                 } else if (h.getNProperties() == 1) {
                     ++nBTLOwnerOccupier;
-                    ownerOccupierAnnualisedNetTotalIncome += h.getMonthlyNetTotalIncome();
+                    ownerOccupierAnnualisedGrossTotalIncome += h.getMonthlyGrossTotalIncome();
                 // Inactive BTL investors in social housing
                 } else {
                     ++nBTLHomeless;
-                    homelessAnnualisedNetTotalIncome += h.getMonthlyNetTotalIncome();
+                    homelessAnnualisedGrossTotalIncome += h.getMonthlyGrossTotalIncome();
                 }
             } else {
                 if (h.isBankrupt()) nNonBTLBankruptcies += 1;
                 // Non-BTL investors who own their house
                 if (h.isHomeowner()) {
                     ++nNonBTLOwnerOccupier;
-                    ownerOccupierAnnualisedNetTotalIncome += h.getMonthlyNetTotalIncome();
+                    ownerOccupierAnnualisedGrossTotalIncome += h.getMonthlyGrossTotalIncome();
                     // Non-BTL investors renting
                 } else if (h.isRenting()) {
                     ++nRenting;
-                    rentingAnnualisedNetTotalIncome += h.getMonthlyNetTotalIncome();
+                    rentingAnnualisedGrossTotalIncome += h.getMonthlyGrossTotalIncome();
                     if (Model.housingMarketStats.getExpAvSalePriceForQuality(h.getHome().getQuality()) > 0) {
                         sumStockYield += h.getHousePayments().get(h.getHome()).monthlyPayment
                                 *config.constants.MONTHS_IN_YEAR
@@ -111,7 +111,7 @@ public class HouseholdStats {
                     // Non-BTL investors in social housing
                 } else if (h.isInSocialHousing()) {
                     ++nNonBTLHomeless;
-                    homelessAnnualisedNetTotalIncome += h.getMonthlyNetTotalIncome();
+                    homelessAnnualisedGrossTotalIncome += h.getMonthlyGrossTotalIncome();
                 }
             }
             // Record household micro-data
@@ -152,10 +152,10 @@ public class HouseholdStats {
             }
         }
         // Annualise monthly income data
-        activeBTLAnnualisedNetTotalIncome *= config.constants.MONTHS_IN_YEAR;
-        ownerOccupierAnnualisedNetTotalIncome *= config.constants.MONTHS_IN_YEAR;
-        rentingAnnualisedNetTotalIncome *= config.constants.MONTHS_IN_YEAR;
-        homelessAnnualisedNetTotalIncome *= config.constants.MONTHS_IN_YEAR;
+        activeBTLAnnualisedGrossTotalIncome *= config.constants.MONTHS_IN_YEAR;
+        ownerOccupierAnnualisedGrossTotalIncome *= config.constants.MONTHS_IN_YEAR;
+        rentingAnnualisedGrossTotalIncome *= config.constants.MONTHS_IN_YEAR;
+        homelessAnnualisedGrossTotalIncome *= config.constants.MONTHS_IN_YEAR;
         // Pass number of bidders above the exponential moving average sale price to persistent variable and
         // re-initialise to zero the counter
         nNonBTLBidsAboveExpAvSalePrice = nNonBTLBidsAboveExpAvSalePriceCounter;
@@ -201,10 +201,10 @@ public class HouseholdStats {
     int getnNonOwner() { return nRenting + getnHomeless(); }
 
     // Getters for annualised income variables
-    double getActiveBTLAnnualisedNetTotalIncome() { return activeBTLAnnualisedNetTotalIncome; }
-    double getOwnerOccupierAnnualisedNetTotalIncome() { return ownerOccupierAnnualisedNetTotalIncome; }
-    double getRentingAnnualisedNetTotalIncome() { return rentingAnnualisedNetTotalIncome; }
-    double getHomelessAnnualisedNetTotalIncome() { return homelessAnnualisedNetTotalIncome; }
+    double getActiveBTLAnnualisedGrossTotalIncome() { return activeBTLAnnualisedGrossTotalIncome; }
+    double getOwnerOccupierAnnualisedGrossTotalIncome() { return ownerOccupierAnnualisedGrossTotalIncome; }
+    double getRentingAnnualisedGrossTotalIncome() { return rentingAnnualisedGrossTotalIncome; }
+    double getHomelessAnnualisedGrossTotalIncome() { return homelessAnnualisedGrossTotalIncome; }
 
     // Getters for yield variables
     double getAvStockYield() {

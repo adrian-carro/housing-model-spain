@@ -89,7 +89,7 @@ public class Household implements IHouseOwner {
         // Update desired purchase price
         desiredPurchasePrice = behaviour.updateDesiredPurchasePrice(annualGrossEmploymentIncome);
         // desiredPurchasePrice = behaviour.getAltDesiredPurchasePrice(annualGrossEmploymentIncome, behaviour.decideLTV(this));
-        // Add monthly disposable income (net total income minus essential consumption and housing expenses) to bank balance
+        // Add monthly disposable income (gross total income - essential consumption & housing expenses) to bank balance
         double monthlyDisposableIncome = getMonthlyDisposableIncome();
         bankBalance += monthlyDisposableIncome;
         // Consume according to gross annual income, capped by current bank balance (after disposable income has been
@@ -161,60 +161,15 @@ public class Household implements IHouseOwner {
      * total income (employment income plus property income minus taxes)
      */
     private double getMonthlyDisposableIncome() {
-        // Start with net monthly income
-        double monthlyDisposableIncome = getMonthlyNetTotalIncome();
+        // Start with gross monthly income
+        double monthlyDisposableIncome = getMonthlyGrossTotalIncome();
         // Subtract essential, necessary consumption
-        // TODO: ESSENTIAL_CONSUMPTION_FRACTION is not explained in the paper, all support is said to be consumed
-        monthlyDisposableIncome -= config.ESSENTIAL_CONSUMPTION_FRACTION*config.GOVERNMENT_MONTHLY_INCOME_SUPPORT;
+        monthlyDisposableIncome -= config.ESSENTIAL_CONSUMPTION_FRACTION * config.GOVERNMENT_MONTHLY_INCOME_SUPPORT;
         // Subtract housing consumption
         for(PaymentAgreement payment: housePayments.values()) {
             monthlyDisposableIncome -= payment.makeMonthlyPayment();
         }
         return monthlyDisposableIncome;
-    }
-
-    /**
-     * Subtracts the monthly aliquot part of all due taxes from the monthly gross total income. Note that only income
-     * tax on employment and rental income and national insurance contributions are implemented (no capital gains tax)!
-     */
-    public double getMonthlyNetTotalIncome() {
-        return getMonthlyGrossTotalIncome()
-                - (Model.government.incomeTaxDue(getAnnualGrossTotalIncome() - getAnnualFinanceCosts())  // Income tax (with finance costs tax relief)
-                + Model.government.class1NICsDue(annualGrossEmploymentIncome))  // National insurance contributions
-                /config.constants.MONTHS_IN_YEAR;
-    }
-
-    /**
-     * For the purpose of affordability checks for non-BTL households, a monthly net employment income is needed. This
-     * makes sure that no rental income is accounted for, which non-BTL households can temporarily receive as a result
-     * of temporarily renting out inherited properties while they manage to sell them. Thus, this subtracts the monthly
-     * aliquot part of all due taxes (without any finance cost relief) from the monthly gross employment income
-     * (ignoring any rental income). Note that only income tax on employment income and national insurance contributions
-     * are implemented (no capital gains tax)!
-     */
-    public double getMonthlyNetEmploymentIncome() {
-        return getMonthlyGrossEmploymentIncome()
-                - (Model.government.incomeTaxDue(annualGrossEmploymentIncome)  // Income tax
-                + Model.government.class1NICsDue(annualGrossEmploymentIncome))  // National insurance contributions
-                /config.constants.MONTHS_IN_YEAR;
-    }
-
-    /**
-     * Adds up all interests paid on buy-to-let properties currently rented by this household, for the purpose of
-     * obtaining tax relief on these costs. Note that this algorithm assumes buy-to-let investors always have interest
-     * only mortgages, and that non BTL households inheriting properties never inherit any debt on these properties
-     */
-    private double getAnnualFinanceCosts() {
-        double financeCosts = 0.0;
-        for (Map.Entry<House, PaymentAgreement> entry : housePayments.entrySet()) {
-            House house = entry.getKey();
-            PaymentAgreement payment = entry.getValue();
-            if (payment instanceof MortgageAgreement && house.owner == this && payment.nextPayment() != 0.0
-                    && house.resident != null && house.resident.getHousePayments().get(house).nextPayment() != 0.0) {
-                financeCosts += payment.nextPayment();
-            }
-        }
-        return financeCosts*config.constants.MONTHS_IN_YEAR;
     }
 
     /**
@@ -458,8 +413,8 @@ public class Household implements IHouseOwner {
                     isFirstTimeBuyer());
         } else {
             // ... if renting, bid in the house rental market for the desired rent price
-            Model.houseRentalMarket.bid(this, behaviour.getDesiredRentPrice(annualGrossEmploymentIncome,
-                    getMonthlyNetTotalIncome()), false, 0.0);
+            Model.houseRentalMarket.bid(this, behaviour.getDesiredRentPrice(monthlyGrossEmploymentIncome),
+                    false, 0.0);
         }
     }
 

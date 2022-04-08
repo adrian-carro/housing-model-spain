@@ -160,11 +160,7 @@ public class Config {
     double BANK_ICR_HARD_MIN;               // Internal private bank policy: Hard minimum ratio between (expected) annual rental income and annual interest payments
 
     // Government
-    double GOVERNMENT_GENERAL_PERSONAL_ALLOWANCE;           // General personal allowance to be deducted when computing taxable income
-    double GOVERNMENT_INCOME_LIMIT_FOR_PERSONAL_ALLOWANCE;  // Limit of income above which personal allowance starts to decrease £1 for every £2 of income above this limit
     public double GOVERNMENT_MONTHLY_INCOME_SUPPORT;        // Income support for a couple, both over 18 years old (Jobseeker's allowance)
-    public String DATA_TAX_RATES;                           // Address for tax bands and rates data
-    public String DATA_NATIONAL_INSURANCE_RATES;            // Address for national insurance bands and rates data
 
     // OUTPUT CALIBRATED PARAMETERS
 

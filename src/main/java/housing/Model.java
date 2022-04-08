@@ -58,8 +58,6 @@ public class Model {
     public static int                   nSimulation; // To keep track of the simulation number
     public static int                   t; // To keep track of time (in months)
 
-    static Government                   government;
-
     private static Demographics         demographics;
     private static Recorder             recorder;
     private static String               configFileName;
@@ -77,7 +75,6 @@ public class Model {
         config = new Config(configFileName);
         prng = new MersenneTwister(config.SEED);
 
-        government = new Government();
         demographics = new Demographics(prng);
         construction = new Construction(prng);
         centralBank = new CentralBank();

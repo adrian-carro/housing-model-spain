@@ -134,14 +134,14 @@ public class HouseholdBehaviour {
     /**
      * Desired rental price used to bid on the rental market.
      *
-     * @param annualGrossEmploymentIncome Annual gross employment income of the household
+     * @param monthlyGrossEmploymentIncome Monthly gross employment income of the household
      */
-    double getDesiredRentPrice(double annualGrossEmploymentIncome, double monthlyNetTotalIncome) {
+    double getDesiredRentPrice(double monthlyGrossEmploymentIncome) {
         double desiredRentalPrice = config.DESIRED_RENT_SCALE
-                * Math.pow(annualGrossEmploymentIncome, config.DESIRED_RENT_EXPONENT)
+                * Math.pow(monthlyGrossEmploymentIncome * config.constants.MONTHS_IN_YEAR, config.DESIRED_RENT_EXPONENT)
                 * Math.exp(config.DESIRED_RENT_MU + config.DESIRED_RENT_SIGMA * prng.nextGaussian());
-        // Note the capping of rental bids to the available net income after essential consumption
-        return Math.min(desiredRentalPrice, monthlyNetTotalIncome
+        // Note the capping of rental bids to the available (gross) income after essential consumption
+        return Math.min(desiredRentalPrice, monthlyGrossEmploymentIncome
                 - config.ESSENTIAL_CONSUMPTION_FRACTION * config.GOVERNMENT_MONTHLY_INCOME_SUPPORT);
     }
 
