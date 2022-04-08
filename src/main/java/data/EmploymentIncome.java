@@ -115,9 +115,9 @@ public class EmploymentIncome {
         }
         // Assign gross annual income according to the determined boundAge
         double income = Math.exp(lnIncomeGivenAge.getBinAt(boundAge).inverseCumulativeProbability(incomePercentile));
-        // Impose a minimum income equivalent to the minimum government annual income support
-        if (income < Model.config.GOVERNMENT_MONTHLY_INCOME_SUPPORT*Model.config.constants.MONTHS_IN_YEAR) {
-            income = Model.config.GOVERNMENT_MONTHLY_INCOME_SUPPORT*Model.config.constants.MONTHS_IN_YEAR;
+        // Impose a minimum income equivalent to the minimum consumption level (to avoid < 0 disposable incomes)
+        if (income < Model.config.ESSENTIAL_NOMINAL_CONSUMPTION * Model.config.constants.MONTHS_IN_YEAR) {
+            income = Model.config.ESSENTIAL_NOMINAL_CONSUMPTION * Model.config.constants.MONTHS_IN_YEAR;
         }
         return income;
     }

@@ -141,8 +141,7 @@ public class HouseholdBehaviour {
                 * Math.pow(monthlyGrossEmploymentIncome * config.constants.MONTHS_IN_YEAR, config.DESIRED_RENT_EXPONENT)
                 * Math.exp(config.DESIRED_RENT_MU + config.DESIRED_RENT_SIGMA * prng.nextGaussian());
         // Note the capping of rental bids to the available (gross) income after essential consumption
-        return Math.min(desiredRentalPrice, monthlyGrossEmploymentIncome
-                - config.ESSENTIAL_CONSUMPTION_FRACTION * config.GOVERNMENT_MONTHLY_INCOME_SUPPORT);
+        return Math.min(desiredRentalPrice, monthlyGrossEmploymentIncome - config.ESSENTIAL_NOMINAL_CONSUMPTION);
     }
 
     /**

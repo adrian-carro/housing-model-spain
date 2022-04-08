@@ -164,7 +164,7 @@ public class Household implements IHouseOwner {
         // Start with gross monthly income
         double monthlyDisposableIncome = getMonthlyGrossTotalIncome();
         // Subtract essential, necessary consumption
-        monthlyDisposableIncome -= config.ESSENTIAL_CONSUMPTION_FRACTION * config.GOVERNMENT_MONTHLY_INCOME_SUPPORT;
+        monthlyDisposableIncome -= config.ESSENTIAL_NOMINAL_CONSUMPTION;
         // Subtract housing consumption
         for(PaymentAgreement payment: housePayments.values()) {
             monthlyDisposableIncome -= payment.makeMonthlyPayment();

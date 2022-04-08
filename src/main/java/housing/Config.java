@@ -71,8 +71,8 @@ public class Config {
     public String DATA_WEALTH_GIVEN_INCOME; // Address for conditional probability of liquid wealth given total gross non-rent income
 
     // Household behaviour: Consumption
-    double ESSENTIAL_CONSUMPTION_FRACTION;  // Fraction of Government support necessarily spent monthly by all households as essential consumption
-    double MAXIMUM_CONSUMPTION_FRACTION;    // Maximum monthly consumption as a fraction of the household's gross annual income
+    public double ESSENTIAL_NOMINAL_CONSUMPTION;    // Nominal amount necessaritly spent monthly by all households as essential consumption
+    double MAXIMUM_CONSUMPTION_FRACTION;            // Maximum monthly consumption as a fraction of the household's gross annual income
 
     // Household behaviour: Expectations
     double HPA_EXPECTATION_FACTOR;          // Dampening (or multiplier) factor for previous trend when computing future HPI growth expectations
@@ -158,9 +158,6 @@ public class Config {
     double BANK_LTI_HARD_MAX_HM;            // Internal private bank policy: Hard maximum LTI ratio for home movers
     double BANK_AFFORDABILITY_HARD_MAX;     // Internal private bank policy: Hard maximum fraction of household's income to be spent on mortgage repayments
     double BANK_ICR_HARD_MIN;               // Internal private bank policy: Hard minimum ratio between (expected) annual rental income and annual interest payments
-
-    // Government
-    public double GOVERNMENT_MONTHLY_INCOME_SUPPORT;        // Income support for a couple, both over 18 years old (Jobseeker's allowance)
 
     // OUTPUT CALIBRATED PARAMETERS
 
