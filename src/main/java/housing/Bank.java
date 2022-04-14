@@ -357,8 +357,7 @@ public class Bank {
 
         // Loan-To-Value (LTV) constraint: it sets a maximum value for the ratio of the principal divided by the house
         // price
-        approval.principal = housePrice;
-//        approval.principal = housePrice * getLoanToValueLimit(h.isFirstTimeBuyer(), isHome);
+        approval.principal = housePrice * h.getPersistentLTVLimit();
 
         if (getNPayments(isHome, h.getAge()) > 0) {
 
@@ -464,7 +463,7 @@ public class Bank {
 
         // Loan-To-Value (LTV) constraint: it sets a maximum value for the ratio of the principal divided by the house
         // price, thus setting a maximum house price given a fixed (maximised) down-payment
-        double max_price = max_downpayment / (1.0 - getLoanToValueLimit(h.isFirstTimeBuyer(), isHome));
+        double max_price = max_downpayment / (1.0 - h.getPersistentLTVLimit());
 
         /*
          * Constraints specific to non-BTL mortgages
@@ -494,7 +493,7 @@ public class Bank {
             double icr_max_price = max_downpayment / (1.0 - Model.rentalMarketStats.getExpAvFlowYield()
                     / (getHardMinICR() * getMortgageInterestRate()));
             // When the rental yield is larger than the interest rate times the ICR, then the ICR does never constrain
-            if (icr_max_price < 0.0) icr_max_price = Double.POSITIVE_INFINITY;
+            if (icr_max_price <= 0.0) icr_max_price = Double.POSITIVE_INFINITY;
             max_price = Math.min(max_price,  icr_max_price);
         }
 
@@ -519,18 +518,20 @@ public class Bank {
      * @param isHome True if the mortgage is to buy a home for the household (non-BTL mortgage)
      * @return The Loan-To-Value ratio limit applicable to this type of household
      */
-    private double getLoanToValueLimit(boolean isFirstTimeBuyer, boolean isHome) {
+    double getLoanToValueLimit(boolean isFirstTimeBuyer, boolean isHome) {
         if (isHome) {
             if (isFirstTimeBuyer) {
                 if (prng.nextDouble() < firstTimeBuyerFracOverSoftMaxLTV) {
-                    return Math.min(firstTimeBuyerSoftMaxLTV + (1.0 - firstTimeBuyerSoftMaxLTV) * prng.nextDouble(),
+                    return Math.min(firstTimeBuyerSoftMaxLTV
+                                    + (firstTimeBuyerHardMaxLTV - firstTimeBuyerSoftMaxLTV) * prng.nextDouble(),
                             centralBank.getFirstTimeBuyerHardMaxLTV());
                 } else {
                     return Math.min(firstTimeBuyerSoftMaxLTV, centralBank.getFirstTimeBuyerHardMaxLTV());
                 }
             } else {
                 if (prng.nextDouble() < homeMoverFracOverSoftMaxLTV) {
-                    return Math.min(homeMoverSoftMaxLTV + (1.0 - homeMoverSoftMaxLTV) * prng.nextDouble(),
+                    return Math.min(homeMoverSoftMaxLTV
+                                    + (homeMoverHardMaxLTV - homeMoverSoftMaxLTV) * prng.nextDouble(),
                             centralBank.getHomeMoverHardMaxLTV());
                 } else {
                     return Math.min(homeMoverSoftMaxLTV, centralBank.getHomeMoverHardMaxLTV());
@@ -538,7 +539,7 @@ public class Bank {
             }
         } else {
             if (prng.nextDouble() < buyToLetFracOverSoftMaxLTV) {
-                return Math.min(buyToLetSoftMaxLTV + (1.0 - buyToLetSoftMaxLTV) * prng.nextDouble(),
+                return Math.min(buyToLetSoftMaxLTV + (buyToLetHardMaxLTV - buyToLetSoftMaxLTV) * prng.nextDouble(),
                         centralBank.getBuyToLetHardMaxLTV());
             } else {
                 return Math.min(buyToLetSoftMaxLTV, centralBank.getBuyToLetHardMaxLTV());

@@ -42,6 +42,7 @@ public class Household implements IHouseOwner {
     private boolean                         isFirstTimeBuyer;
     private boolean                         isBankrupt;
     private double                          persistentLTILimit; // LTI limit currently offered by the bank to this household in an approval in principle letter
+    private double                          persistentLTVLimit; // LTV limit currently offered by the bank to this household in an approval in principle letter
 
     //------------------------//
     //----- Constructors -----//
@@ -65,6 +66,7 @@ public class Household implements IHouseOwner {
         monthlyGrossEmploymentIncome = annualGrossEmploymentIncome/config.constants.MONTHS_IN_YEAR;
         bankBalance = data.Wealth.getDesiredBankBalance(getAnnualGrossTotalIncome(), behaviour.getPropensityToSave()); // Desired bank balance is used as initial value for actual bank balance
         persistentLTILimit = -1; // Dummy value to catch usages before set up
+        persistentLTVLimit = -1; // Dummy value to catch usages before set up
     }
 
     //-------------------//
@@ -144,6 +146,8 @@ public class Household implements IHouseOwner {
                 bidForAHome();
             }            
         } else if (behaviour.isPropertyInvestor()) { // Only BTL investors who already own a home enter here
+            // Before any maximum mortgage price calculation, update the persistent LTV limit for this household
+            persistentLTVLimit = Model.bank.getLoanToValueLimit(isFirstTimeBuyer(), false);
             // BTL investors always bid the price corresponding to the maximum mortgage they could get
             double price = Model.bank.getMaxMortgagePrice(this, false);
             Model.householdStats.countBTLBidsAboveExpAvSalePrice(price);
@@ -396,8 +400,9 @@ public class Household implements IHouseOwner {
      * owning. 
      ********************************************************/
     private void bidForAHome() {
-        // Before any maximum mortgage price calculation, update the persistent LTI limit for this household
+        // Before any maximum mortgage price calculation, update the persistent LTI and LTV limits for this household
         persistentLTILimit = Model.bank.getLoanToIncomeLimit(isFirstTimeBuyer());
+        persistentLTVLimit = Model.bank.getLoanToValueLimit(isFirstTimeBuyer(), true);
         // Find household's desired housing expenditure, capped to the maximum mortgage available to the household
         double price = Math.min(getDesiredPurchasePrice(), Model.bank.getMaxMortgagePrice(this, true));
         // Record the bid on householdStats for counting the number of bids above exponential moving average sale price
@@ -641,4 +646,6 @@ public class Household implements IHouseOwner {
     public double getDesiredPurchasePrice() { return desiredPurchasePrice; }
 
     double getPersistentLTILimit() { return persistentLTILimit; }
+
+    double getPersistentLTVLimit() { return persistentLTVLimit; }
 }
