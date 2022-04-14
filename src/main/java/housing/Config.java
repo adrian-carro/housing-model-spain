@@ -113,6 +113,7 @@ public class Config {
     double BTL_INCOME_DRIVEN_CAP_GAIN_COEFF;    // Weight that rental-income-driven BTL investors put on capital gains
     double BTL_CAPITAL_DRIVEN_CAP_GAIN_COEFF;   // Weight that capital-gains-driven BTL investors put on capital gains
     double BTL_MIX_DRIVEN_CAP_GAIN_COEFF;       // Weight that mix-driven BTL investors put on capital gains
+    double BTL_ALTERNATIVE_RETURN;              // Expected return on alternative (non-BTL) investments
 
     // Household behaviour: Rent: Rent Desired rental expenditure
     double DESIRED_RENT_SCALE;              // Scale, number of annual salaries (raised to the DESIRED_RENT_EXPONENT power) the household is willing to spend on rent

@@ -264,7 +264,6 @@ public class HouseholdBehaviour {
             purchasePrice = housingMarketStats.getExpAvSalePriceForQuality(config.derivedParams.N_QUALITIES - 1);
         }
         // If maximum mortgage price is below desired price (capped by maximum quality price), then rent
-        // TODO: Re-check if we're fine with this rule after output calibration
         if (Math.min(desiredPrice, housingMarketStats.getExpAvSalePriceForQuality(config.derivedParams.N_QUALITIES - 1))
                 > Model.bank.getMaxMortgagePrice(me, true)) {
             return false;
@@ -326,7 +325,7 @@ public class HouseholdBehaviour {
         double mortgageRate = mortgage.nextPayment() * config.constants.MONTHS_IN_YEAR / equity;
         // ...finally, find expected equity yield, or yield on equity
         double expectedEquityYield = leverage * ((1.0 - BTLCapGainCoefficient) * currentRentalYield
-                + BTLCapGainCoefficient * getLongTermHPAExpectation())
+                + BTLCapGainCoefficient * getLongTermHPAExpectation() - config.BTL_ALTERNATIVE_RETURN)
                 - mortgageRate;
         // Compute a probability to keep the property as a function of the effective yield
         double pKeep = Math.pow(sigma(config.BTL_CHOICE_INTENSITY * expectedEquityYield),
@@ -376,7 +375,7 @@ public class HouseholdBehaviour {
         double mortgageRate = mortgage.nextPayment()*config.constants.MONTHS_IN_YEAR/equity;
         // ...finally, find expected equity yield, or yield on equity
         double expectedEquityYield = leverage*((1.0 - BTLCapGainCoefficient)*rentalYield
-                + BTLCapGainCoefficient*getLongTermHPAExpectation())
+                + BTLCapGainCoefficient*getLongTermHPAExpectation() - config.BTL_ALTERNATIVE_RETURN)
                 - mortgageRate;
         // Compute the probability to decide to buy an investment property as a function of the expected equity yield
         double pBuy = 1.0 - Math.pow((1.0 - sigma(config.BTL_CHOICE_INTENSITY*expectedEquityYield)),
