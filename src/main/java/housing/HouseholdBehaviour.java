@@ -322,7 +322,12 @@ public class HouseholdBehaviour {
         double currentRentalYield = h.getRentalRecord().getPrice() * config.constants.MONTHS_IN_YEAR
                 * rentalMarketStats.getAvOccupancyForQuality(h.getQuality()) / currentMarketPrice;
         // ...find the mortgage rate (pounds paid a year per pound of equity)
-        double mortgageRate = mortgage.nextPayment() * config.constants.MONTHS_IN_YEAR / equity;
+        double mortgageRate;
+        if (config.interestOnlyMortgagesForBTL) {
+            mortgageRate = mortgage.nextPayment() * config.constants.MONTHS_IN_YEAR / equity;
+        } else {
+            mortgageRate = mortgage.principal * mortgage.getAnnualInterestRate() / equity;
+        }
         // ...finally, find expected equity yield, or yield on equity
         double expectedEquityYield = leverage * ((1.0 - BTLCapGainCoefficient) * currentRentalYield
                 + BTLCapGainCoefficient * getLongTermHPAExpectation() - config.BTL_ALTERNATIVE_RETURN)
@@ -372,7 +377,12 @@ public class HouseholdBehaviour {
         // ...find the expected rental yield as an (exponential) average over all house qualities
         double rentalYield = rentalMarketStats.getExpAvFlowYield();
         // ...find the mortgage rate (pounds paid a year per pound of equity)
-        double mortgageRate = mortgage.nextPayment()*config.constants.MONTHS_IN_YEAR/equity;
+        double mortgageRate;
+        if (config.interestOnlyMortgagesForBTL) {
+            mortgageRate = mortgage.nextPayment() * config.constants.MONTHS_IN_YEAR / equity;
+        } else {
+            mortgageRate = mortgage.principal * mortgage.getAnnualInterestRate() / equity;
+        }
         // ...finally, find expected equity yield, or yield on equity
         double expectedEquityYield = leverage*((1.0 - BTLCapGainCoefficient)*rentalYield
                 + BTLCapGainCoefficient*getLongTermHPAExpectation() - config.BTL_ALTERNATIVE_RETURN)

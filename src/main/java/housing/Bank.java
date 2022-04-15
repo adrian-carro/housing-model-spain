@@ -351,6 +351,9 @@ public class Bank {
         // Create a MortgageAgreement object to store and return the new mortgage data
         MortgageAgreement approval = new MortgageAgreement(h, !isHome);
 
+        // If interest-only mortgages for BTL investors are turned off, then treat all requests as non-BTL
+        if (!config.interestOnlyMortgagesForBTL) { isHome = true; }
+
         /*
          * Constraints for all mortgages
          */
@@ -449,6 +452,10 @@ public class Bank {
      * @return A double with the maximum house price that this mortgage-lender is willing to approve a mortgage for
      */
     double getMaxMortgagePrice(Household h, boolean isHome) {
+
+        // If interest-only mortgages for BTL investors are turned off, then treat all requests as non-BTL
+        if (!config.interestOnlyMortgagesForBTL) { isHome = true; }
+
         // First, maximise leverage by maximising the down-payment, thus using all the liquid wealth of the household
         // (except 1 cent to avoid rounding errors), with no home equity added, as home-movers always sell their homes
         // before bidding for new ones

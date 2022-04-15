@@ -146,8 +146,9 @@ public class Household implements IHouseOwner {
                 bidForAHome();
             }            
         } else if (behaviour.isPropertyInvestor()) { // Only BTL investors who already own a home enter here
-            // Before any maximum mortgage price calculation, update the persistent LTV limit for this household
-            persistentLTVLimit = Model.bank.getLoanToValueLimit(isFirstTimeBuyer(), false);
+            // Before any maximum mortgage price calculation, update the persistent LTV & LTI limits for this household
+            persistentLTILimit = Model.bank.getLoanToIncomeLimit(false);
+            persistentLTVLimit = Model.bank.getLoanToValueLimit(false, false);
             // BTL investors always bid the price corresponding to the maximum mortgage they could get
             double price = Model.bank.getMaxMortgagePrice(this, false);
             Model.householdStats.countBTLBidsAboveExpAvSalePrice(price);

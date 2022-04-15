@@ -33,6 +33,7 @@ public class Config {
     public int TIME_TO_START_RECORDING_TRANSACTIONS;    // Time step to start recording transactions (to avoid too large files)
     int ROLLING_WINDOW_SIZE_FOR_CORE_INDICATORS;        // Size, in months, of the rolling window used to compute averages of core indicators
     private double CUMULATIVE_WEIGHT_BEYOND_YEAR;       // Total cumulative weight given to events older than 12 months when computing exponential moving averages
+    boolean interestOnlyMortgagesForBTL;                // True for interest-only mortgages for BTL investors (with LTV, ICR limits), false for normal mortgages (shorter maturity, LTV, LTI, DSTI limits)
     public boolean recordTransactions;                  // True to write data for each transaction
     boolean recordNBidUpFrequency;                      // True to write the frequency of the number of bid-ups
     boolean recordCoreIndicators;                       // True to write time series for each core indicator
