@@ -368,8 +368,8 @@ public class Bank {
             if (isHome) {
                 // Affordability constraint: it sets a maximum value for the monthly mortgage payment divided by the
                 // household's monthly gross employment income
-                double affordable_principal = getHardMaxAffordability() * h.getMonthlyGrossEmploymentIncome()
-                        / getMonthlyPaymentFactor(true, h.getAge());
+                double affordable_principal = getHardMaxAffordability(h.getMonthlyGrossEmploymentIncome())
+                        * h.getMonthlyGrossEmploymentIncome() / getMonthlyPaymentFactor(true, h.getAge());
                 if (getMonthlyPaymentFactor(true, h.getAge()) == 1.0) affordable_principal = 0.0;
                 approval.principal = Math.min(approval.principal, affordable_principal);
                 // Loan-To-Income (LTI) constraint: it sets a maximum value for the principal divided by the household's
@@ -472,7 +472,7 @@ public class Bank {
         if (isHome) {
             // Affordability constraint: it sets a maximum value for the monthly mortgage payment divided by the
             // household's monthly gross employment income
-            double affordable_max_price = max_downpayment + getHardMaxAffordability()
+            double affordable_max_price = max_downpayment + getHardMaxAffordability(h.getMonthlyGrossEmploymentIncome())
                     * h.getMonthlyGrossEmploymentIncome() / getMonthlyPaymentFactor(true, h.getAge());
             if (getMonthlyPaymentFactor(true, h.getAge()) == 1.0) affordable_max_price = max_downpayment;
             max_price = Math.min(max_price, affordable_max_price);
@@ -637,9 +637,14 @@ public class Bank {
 
     /**
      * Get the most constraining affordability limit, between the private and the central bank policies
+     * @param monthlyGrossEmploymentIncome The monthly gross employment income of this household
+     * @return The affordability limit applicable to this household
      */
-    private double getHardMaxAffordability() {
-        return Math.min(hardMaxAffordability, centralBank.getHardMaxAffordability());
+    private double getHardMaxAffordability(double monthlyGrossEmploymentIncome) {
+        double limitGivenByEssentialConsumption =
+                1.0 - config.ESSENTIAL_NOMINAL_CONSUMPTION / monthlyGrossEmploymentIncome;
+        return Math.min(limitGivenByEssentialConsumption,
+                Math.min(hardMaxAffordability, centralBank.getHardMaxAffordability()));
     }
 
     /**
