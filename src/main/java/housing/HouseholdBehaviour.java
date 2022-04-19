@@ -305,7 +305,7 @@ public class HouseholdBehaviour {
             return true;
         }
         // ...always keep at least one investment property (i.e., at least two properties)
-        if (me.getNProperties() < 3) return false;
+        // if (me.getNProperties() < 3) return false; // TODO: Finally decide whether to keep or not
         // ...don't sell while occupied by tenant
         if (!h.isOnRentalMarket()) return false;
 
@@ -359,7 +359,7 @@ public class HouseholdBehaviour {
             return false;
         }
         // ...otherwise, always decide to buy if owning no investment property yet (i.e., if owning only one property, a home)
-        if (me.getNProperties() < 2) { return true ; }
+        // if (me.getNProperties() < 2) { return true ; } // TODO: Finally decide whether to keep or not
         // ...also, do not buy if the maximum price of the household (corresponding to its maximum mortgage) is below
         // the average price for the lowest quality
         double maxPrice = Model.bank.getMaxMortgagePrice(me, false);
