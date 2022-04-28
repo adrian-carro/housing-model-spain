@@ -170,13 +170,30 @@ public class HouseholdBehaviour {
 
     /**
      * This method implements a household's decision to sell their owner-occupied property. On average, households sell
-     * owner-occupied houses every 11 years, due to exogenous reasons not addressed in the model.
-     *
-     * @return True if the owner-occupier decides to sell the house and false otherwise.
+     * owner-occupied houses every X years, due to exogenous reasons not addressed in the model.
+     * @param me the household considering selling
+     * @param h the house that might be put for sale
+     * @return True if the owner-occupier decides to sell the house, false otherwise
      */
-    boolean decideToSellHome() {
-        // TODO: This if implies BTL agents never sell their homes, need to explain in paper!
-        return !isPropertyInvestor() && (prng.nextDouble() < config.derivedParams.MONTHLY_P_SELL);
+    boolean decideToSellHome(Household me, House h) {
+        // Quick decisions...
+        // ...households with the BTL flag never sell their homes
+        if (isPropertyInvestor()) {
+            return false;
+        }
+        // ...do not consider selling if maximum mortgage price constraint would make the household choose renting
+        if ((me.getDesiredPurchasePrice() > Model.bank.getMaxMortgagePrice(me, true)) && (me.getAge() > 35.0)) {
+            return false;
+        }
+        // ...do not consider selling if the household's current net wealth would not allow it to move up in quality
+        double netWealth = me.getBankBalance() + housingMarketStats.getExpAvSalePriceForQuality(h.getQuality())
+                - ((MortgageAgreement) me.getHousePayments().get(h)).principal;
+        if ((housingMarketStats.getMaxQualityForPrice(netWealth) <= h.getQuality()) && (me.getAge() > 45.0)) {
+            return false;
+        }
+
+        // Finally, if none of the above kicks in, apply the calibrated monthly probability to sell
+        return prng.nextDouble() < config.derivedParams.MONTHLY_P_SELL;
     }
 
     /**

@@ -429,7 +429,7 @@ public class Household implements IHouseOwner {
      ********************************************************/
     private boolean decideToSellHouse(House h) {
         if(h == home) {
-            return(behaviour.decideToSellHome());
+            return(behaviour.decideToSellHome(this, h));
         } else {
             return(behaviour.decideToSellInvestmentProperty(h, this));
         }
