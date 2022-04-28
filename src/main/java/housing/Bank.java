@@ -275,18 +275,20 @@ public class Bank {
      * limit, in such a way that the full amount is repaid by the time the household reaches this limit.
      */
     private int getNPayments(boolean isHome, double age) {
+        // Impose a minimum age for getting a mortgage
+        if (age < config.BANK_MIN_AGE_LIMIT) return 0;
         // For non-BTL purchases, any mortgage principal must be repaid when the household turns 65
         if (isHome) {
-            if (age <= config.BANK_AGE_LIMIT - config.MORTGAGE_DURATION_YEARS) {
+            if (age <= config.BANK_MAX_AGE_LIMIT - config.MORTGAGE_DURATION_YEARS) {
                 return config.MORTGAGE_DURATION_YEARS * config.constants.MONTHS_IN_YEAR;
-            } else if (age <= config.BANK_AGE_LIMIT) {
-                return (int) ((config.BANK_AGE_LIMIT - age) * config.constants.MONTHS_IN_YEAR);
+            } else if (age <= config.BANK_MAX_AGE_LIMIT) {
+                return (int) ((config.BANK_MAX_AGE_LIMIT - age) * config.constants.MONTHS_IN_YEAR);
             } else {
                 return 0;
             }
         // For BTL purchases, a mortgage can only be approved before the household turns 65
         } else {
-            if (age <= config.BANK_AGE_LIMIT) {
+            if (age <= config.BANK_MAX_AGE_LIMIT) {
                 return config.MORTGAGE_DURATION_YEARS * config.constants.MONTHS_IN_YEAR;
             } else {
                 return 0;

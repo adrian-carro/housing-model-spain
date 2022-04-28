@@ -143,7 +143,8 @@ public class Config {
 
     // Bank
     int MORTGAGE_DURATION_YEARS;            // Mortgage duration in years
-    int BANK_AGE_LIMIT;                     // Maximum age for a household to get a mortgage and maximum age for a non-BTL household to finish repaying its mortgages
+    int BANK_MIN_AGE_LIMIT;                 // Minimum age for any household to get a mortgage
+    int BANK_MAX_AGE_LIMIT;                 // Maximum age for a household to get a mortgage and maximum age for a non-BTL household to finish repaying its mortgages
     double BANK_INITIAL_RATE;               // Private bank's initial interest rate
     double BANK_INITIAL_CREDIT_SUPPLY;      // Private bank's initial supply of credit per household per month
     double BANK_D_INTEREST_D_DEMAND;        // Rate of change of the interest rate in response to a change in the demand for credit per household per month (in points per pound per household per month)
