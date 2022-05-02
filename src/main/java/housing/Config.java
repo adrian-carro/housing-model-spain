@@ -49,6 +49,7 @@ public class Config {
 
     // Central Bank policy
     double CENTRAL_BANK_INITIAL_BASE_RATE;              // Central Bank initial base rate
+    int CENTRAL_BANK_POLICY_APPLICATION_TIME;           // Time step from which any (potentially binding) Central Bank policy is applied
     double CENTRAL_BANK_LTV_HARD_MAX_FTB;               // Mandatory Central Bank policy: Hard maximum LTV ratio for first-time buyers
     double CENTRAL_BANK_LTV_HARD_MAX_HM;                // Mandatory Central Bank policy: Hard maximum LTV ratio for home movers
     double CENTRAL_BANK_LTV_HARD_MAX_BTL;               // Mandatory Central Bank policy: Hard maximum LTV ratio for BTL investors

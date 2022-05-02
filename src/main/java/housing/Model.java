@@ -205,7 +205,7 @@ public class Model {
         // Update bank and interest rate for new mortgages
         bank.step(Model.households.size());
         // Update central bank policies (currently empty!)
-        centralBank.step(coreIndicators);
+        centralBank.step(coreIndicators, t);
     }
 
     /**

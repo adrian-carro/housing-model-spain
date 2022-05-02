@@ -47,13 +47,13 @@ public class CentralBank {
         // Set initial monetary policy
         baseRate = config.CENTRAL_BANK_INITIAL_BASE_RATE;
         // Set initial LTV mandatory policy thresholds
-        firstTimeBuyerHardMaxLTV = config.CENTRAL_BANK_LTV_HARD_MAX_FTB;
-        homeMoverHardMaxLTV = config.CENTRAL_BANK_LTV_HARD_MAX_HM;
-        buyToLetHardMaxLTV = config.CENTRAL_BANK_LTV_HARD_MAX_BTL;
+        firstTimeBuyerHardMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
+        homeMoverHardMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
+        buyToLetHardMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
         // Set initial LTI mandatory policy thresholds
-        firstTimeBuyerSoftMaxLTI = config.CENTRAL_BANK_LTI_SOFT_MAX_FTB;
+        firstTimeBuyerSoftMaxLTI = 15.0; // TODO: Set these as non-binding initial parameters in config file
         firstTimeBuyerMaxFracOverSoftMaxLTI = config.CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_FTB;
-        homeMoverSoftMaxLTI = config.CENTRAL_BANK_LTI_SOFT_MAX_HM;
+        homeMoverSoftMaxLTI = 15.0; // TODO: Set these as non-binding initial parameters in config file
         homeMoverMaxFracOverSoftMaxLTI = config.CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_HM;
         monthsToCheckLTI = config.CENTRAL_BANK_LTI_MONTHS_TO_CHECK;
         // Set initial affordability mandatory policy thresholds
@@ -66,8 +66,20 @@ public class CentralBank {
      * This method implements the policy strategy of the Central Bank
      *
      * @param coreIndicators The current value of the core indicators
+     * @param time The current model time
      */
-    public void step(collectors.CoreIndicators coreIndicators) {
+    public void step(collectors.CoreIndicators coreIndicators, int time) {
+
+        if (time >= config.CENTRAL_BANK_POLICY_APPLICATION_TIME) {
+            // Update LTV mandatory policy thresholds
+            firstTimeBuyerHardMaxLTV = config.CENTRAL_BANK_LTV_HARD_MAX_FTB;
+            homeMoverHardMaxLTV = config.CENTRAL_BANK_LTV_HARD_MAX_HM;
+            buyToLetHardMaxLTV = config.CENTRAL_BANK_LTV_HARD_MAX_BTL;
+            // Update LTI mandatory policy thresholds
+            firstTimeBuyerSoftMaxLTI = config.CENTRAL_BANK_LTI_SOFT_MAX_FTB;
+            homeMoverSoftMaxLTI = config.CENTRAL_BANK_LTI_SOFT_MAX_HM;
+        }
+
         /* Use this method to express the policy strategy of the central bank by setting the value of the various limits
          in response to the current value of the core indicators.
 
