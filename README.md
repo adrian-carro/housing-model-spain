@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/adrian-carro/housing-model-spain.svg?branch=master)](https://travis-ci.com/adrian-carro/housing-model-spain)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7f119a92827247928664ae33cfc88076)](https://www.codacy.com/gh/adrian-carro/housing-model-spain/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adrian-carro/housing-model-spain&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://app.travis-ci.com/adrian-carro/housing-model-spain.svg?branch=master)](https://app.travis-ci.com/adrian-carro/housing-model-spain)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7f119a92827247928664ae33cfc88076)](https://app.codacy.com/gh/adrian-carro/housing-model-spain/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 Agent-Based Model of the Spanish Housing Market
 ===============================================
