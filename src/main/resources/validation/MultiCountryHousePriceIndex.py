@@ -94,6 +94,26 @@ def plot_hpi(_save_figures, _root_results, _countries_list, _to_highlight, _stri
                 #          '-', lw=1.0, color='grey')
                 plt.plot(df.loc[df['LOCATION'] == c, 'TIME'], df.loc[df['LOCATION'] == c, 'RescaledDeTrendedValue'],
                          ':', lw=1.5, color=colors[c], label='{}'.format(countryNames[c]))
+
+    # Special case of PRT
+    # c = 'PRT'
+    # prt_start_date = pd.to_datetime('1988-01-01')
+    # df.loc[df['LOCATION'] == c, 'RescaledValue'] = \
+    #     100.0 * df.loc[df['LOCATION'] == c, 'Value'] / df.loc[(df['LOCATION'] == c) &
+    #                                                           (df['TIME'] == prt_start_date), 'Value'].values[0]
+    # hp_filter = sm.tsa.filters.hpfilter(np.array(df.loc[df['LOCATION'] == c, 'Value'].values),
+    #                                     lamb=myLambda)
+    # df.loc[df['LOCATION'] == c, 'DeTrendedValue'] = hp_filter[0]
+    # df.loc[df['LOCATION'] == c, 'TrendOfValue'] = hp_filter[1]
+    # hp_filter_rescaled = sm.tsa.filters.hpfilter(np.array(df.loc[df['LOCATION'] == c,
+    #                                                              'RescaledValue'].values), lamb=myLambda)
+    # df.loc[df['LOCATION'] == c, 'RescaledDeTrendedValue'] = hp_filter_rescaled[0]
+    # df.loc[df['LOCATION'] == c, 'RescaledTrendOfValue'] = hp_filter_rescaled[1]
+    #
+    # plt.plot(df.loc[df['LOCATION'] == c, 'TIME'], df.loc[df['LOCATION'] == c, 'RescaledDeTrendedValue'],
+    #          '-', lw=1.5, color=colors[c], label='{}'.format(countryNames[c]),
+    #          zorder=100 if c == 'ESP' else 50)
+
     plt.axhline(0, c='k', ls='--', zorder=100)
     plt.xlabel('Date')
     plt.ylabel('HPI (Cyclical Component)')
@@ -132,6 +152,12 @@ def plot_hpi(_save_figures, _root_results, _countries_list, _to_highlight, _stri
             else:
                 plt.plot(df.loc[df['LOCATION'] == c, 'TIME'], df.loc[df['LOCATION'] == c, 'RescaledValue'],
                          '-', lw=1.0, color='grey')
+
+    # Special case of PRT
+    # c = 'PRT'
+    # plt.plot(df.loc[df['LOCATION'] == c, 'TIME'], df.loc[df['LOCATION'] == c, 'RescaledValue'],
+    #          '-', lw=1.5, color=colors[c], label='{}'.format(countryNames[c]))
+
     plt.xlabel('Date')
     plt.ylabel('HPI')
     plt.xlim(start_date, end_date)
@@ -169,11 +195,23 @@ plt.rcParams.update({
 })
 
 # Read multi-country OECD data
-df_original = pd.read_csv(rootOECD + '/OECD_Full_Data.csv', usecols=['LOCATION', 'TIME', 'Value'],
-                          parse_dates=['TIME'])
+df_original = pd.read_csv(rootOECD + '/OECD.ECO.MPD,DSD_AN_HOUSE_PRICES@DF_HOUSE_PRICES,1.0+.Q.RHP.IX.csv',
+                          usecols=['REF_AREA', 'TIME_PERIOD', 'OBS_VALUE'], parse_dates=['TIME_PERIOD'])
+df_original.rename(columns={'REF_AREA': 'LOCATION', 'TIME_PERIOD': 'TIME', 'OBS_VALUE': 'Value'}, inplace=True)
+# Old data
+# df_original = pd.read_csv(rootOECD + '/HOUSE_PRICES-en.csv', usecols=['COU', 'IND', 'TIME', 'Value'],
+#                           parse_dates=['TIME'])
+# # df_original = df_original.loc[df_original['IND'] == 'HPI']
+# df_original = df_original.loc[df_original['IND'] == 'RHP']
+# df_original = df_original[['COU', 'TIME', 'Value']]
+# df_original.rename(columns={'COU': 'LOCATION'}, inplace=True)
+# Original version
+# df_original = pd.read_csv(rootOECD + '/HOUSE_PRICES-en.csv', usecols=['LOCATION', 'TIME', 'Value'],
+#                           parse_dates=['TIME'])
 
 start_date = pd.to_datetime('1973-01-01')
 end_date = pd.to_datetime('2020-10-01')
+# end_date = pd.to_datetime('2024-10-01')
 df = df_original.loc[df_original['TIME'] >= start_date].copy()
 df = df.loc[df['TIME'] <= end_date]
 
@@ -191,6 +229,9 @@ plot_hpi(saveFigures, rootResults,
          ['ESP', 'GBR', 'FRA', 'DEU', 'GRC', 'IRL', 'ITA', 'NLD', 'PRT', 'DNK', 'FIN', 'SWE'],
          # ['FRA', 'DEU', 'GRC', 'IRL', 'ITA', 'NLD', 'PRT', 'DNK', 'FIN', 'SWE', 'ESP', 'GBR'],
          ['ESP', 'GBR'], '-highlight2New')
+# plot_hpi(saveFigures, rootResults,
+#          ['ESP', 'GBR', 'PRT', 'FRA', 'DEU', 'GRC', 'IRL', 'ITA', 'NLD', 'PRT', 'DNK', 'FIN', 'SWE'],
+#          ['ESP', 'GBR', 'PRT'], '-highlight3New')
 # plot_hpi(saveFigures, rootResults,
 #          ['FRA', 'DEU', 'GRC', 'IRL', 'ITA', 'NLD', 'PRT', 'DNK', 'FIN', 'SWE', 'ESP', 'GBR'],
 #          ['ESP'], '-highlight1')
