@@ -57,7 +57,7 @@ public class CentralBank {
         homeMoverMaxFracOverSoftMaxLTI = config.CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_HM;
         monthsToCheckLTI = config.CENTRAL_BANK_LTI_MONTHS_TO_CHECK;
         // Set initial affordability mandatory policy thresholds
-        hardMaxAffordability = config.CENTRAL_BANK_AFFORDABILITY_HARD_MAX;
+        hardMaxAffordability = 0.9999; // TODO: Set these as non-binding initial parameters in config file
         // Set initial ICR mandatory policy thresholds
         hardMinICR = config.CENTRAL_BANK_ICR_HARD_MIN;
     }
@@ -78,6 +78,8 @@ public class CentralBank {
             // Update LTI mandatory policy thresholds
             firstTimeBuyerSoftMaxLTI = config.CENTRAL_BANK_LTI_SOFT_MAX_FTB;
             homeMoverSoftMaxLTI = config.CENTRAL_BANK_LTI_SOFT_MAX_HM;
+            // Update affordability mandatory policy thresholds
+            hardMaxAffordability = config.CENTRAL_BANK_AFFORDABILITY_HARD_MAX;
         }
 
         /* Use this method to express the policy strategy of the central bank by setting the value of the various limits
