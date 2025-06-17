@@ -88,9 +88,9 @@ addUKComparison = True
 min_log_price_bin_edge = 4.0
 max_log_price_bin_edge = 7.6
 log_price_bin_width = 0.25
-rootEFF = r'
-rootModel = r'
-rootResults = r'
+rootEFF = r''
+rootModel = r''
+rootResults = r''
 
 # General printing settings
 pd.set_option('display.max_columns', 500)
