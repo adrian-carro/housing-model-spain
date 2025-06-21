@@ -21,17 +21,24 @@ public class CentralBank {
     // Monetary policy
     private double      baseRate;
 
+    // General soft policies thresholds
+    private int monthsToCheckSoftLimits;            // Months to check for moving average of fraction of mortgages over their soft limit
+
     // LTV internal policy thresholds
-    private double      firstTimeBuyerHardMaxLTV;   // Loan-To-Value hard maximum for first-time buyer mortgages
-    private double      homeMoverHardMaxLTV;        // Loan-To-Value hard maximum for home mover mortgages
-    private double      buyToLetHardMaxLTV;         // Loan-To-Value hard maximum for buy-to-let mortgages
+    private double      firstTimeBuyerSoftMaxLTV;               // Loan-To-Value soft maximum for first-time buyer mortgages
+    private double      firstTimeBuyerMaxFracOverSoftMaxLTV;    // Maximum fraction of first-time buyer mortgages allowed to exceed their LTV soft maximum
+    private double      homeMoverSoftMaxLTV;                    // Loan-To-Value soft maximum for home mover mortgages
+    private double      homeMoverMaxFracOverSoftMaxLTV;         // Maximum fraction of first-time buyer mortgages allowed to exceed their LTV soft maximum
+    private double      buyToLetSoftMaxLTV;                     // Loan-To-Value soft maximum for buy-to-let mortgages
+    private double      buyToLetMaxFracOverSoftMaxLTV;          // Maximum fraction of first-time buyer mortgages allowed to exceed their LTV soft maximum
 
     // LTI policy thresholds
     private double      firstTimeBuyerSoftMaxLTI;               // Loan-To-Income soft maximum for first-time buyer mortgages
     private double      firstTimeBuyerMaxFracOverSoftMaxLTI;    // Maximum fraction of first-time buyer mortgages allowed to exceed their LTI soft maximum
     private double      homeMoverSoftMaxLTI;                    // Loan-To-Income soft maximum for home mover mortgages
     private double      homeMoverMaxFracOverSoftMaxLTI;         // Maximum fraction of home mover mortgages allowed to exceed their LTI soft maximum
-    private int         monthsToCheckLTI;                       // Months to check for moving average of fraction of mortgages over their LTI soft limit
+    private double      buyToLetSoftMaxLTI;                     // Loan-To-Income soft maximum for buy-to-let mortgages
+    private double      buyToLetMaxFracOverSoftMaxLTI;          // Maximum fraction of buy-to-let mortgages allowed to exceed their LTI soft maximum
 
     // Affordability policy thresholds
     private double      hardMaxAffordability;       // Affordability hard maximum (monthly mortgage payment / household's monthly net employment income)
@@ -47,15 +54,20 @@ public class CentralBank {
         // Set initial monetary policy
         baseRate = config.CENTRAL_BANK_INITIAL_BASE_RATE;
         // Set initial LTV mandatory policy thresholds
-        firstTimeBuyerHardMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
-        homeMoverHardMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
-        buyToLetHardMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
+        firstTimeBuyerSoftMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
+        firstTimeBuyerMaxFracOverSoftMaxLTV = config.CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_FTB;
+        homeMoverSoftMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
+        homeMoverMaxFracOverSoftMaxLTV = config.CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_HM;
+        buyToLetSoftMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
+        buyToLetMaxFracOverSoftMaxLTV = config.CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_BTL;
         // Set initial LTI mandatory policy thresholds
         firstTimeBuyerSoftMaxLTI = 15.0; // TODO: Set these as non-binding initial parameters in config file
         firstTimeBuyerMaxFracOverSoftMaxLTI = config.CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_FTB;
         homeMoverSoftMaxLTI = 15.0; // TODO: Set these as non-binding initial parameters in config file
         homeMoverMaxFracOverSoftMaxLTI = config.CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_HM;
-        monthsToCheckLTI = config.CENTRAL_BANK_LTI_MONTHS_TO_CHECK;
+        buyToLetSoftMaxLTI = 15.0; // TODO: Set these as non-binding initial parameters in config file
+        buyToLetMaxFracOverSoftMaxLTI = config.CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_BTL;
+        monthsToCheckSoftLimits = config.CENTRAL_BANK_MONTHS_TO_CHECK_SOFT_LIMITS;
         // Set initial affordability mandatory policy thresholds
         hardMaxAffordability = 0.9999; // TODO: Set these as non-binding initial parameters in config file
         // Set initial ICR mandatory policy thresholds
@@ -72,12 +84,13 @@ public class CentralBank {
 
         if (time >= config.CENTRAL_BANK_POLICY_APPLICATION_TIME) {
             // Update LTV mandatory policy thresholds
-            firstTimeBuyerHardMaxLTV = config.CENTRAL_BANK_LTV_HARD_MAX_FTB;
-            homeMoverHardMaxLTV = config.CENTRAL_BANK_LTV_HARD_MAX_HM;
-            buyToLetHardMaxLTV = config.CENTRAL_BANK_LTV_HARD_MAX_BTL;
+            firstTimeBuyerSoftMaxLTV = config.CENTRAL_BANK_LTV_SOFT_MAX_FTB;
+            homeMoverSoftMaxLTV = config.CENTRAL_BANK_LTV_SOFT_MAX_HM;
+            buyToLetSoftMaxLTV = config.CENTRAL_BANK_LTV_SOFT_MAX_BTL;
             // Update LTI mandatory policy thresholds
             firstTimeBuyerSoftMaxLTI = config.CENTRAL_BANK_LTI_SOFT_MAX_FTB;
             homeMoverSoftMaxLTI = config.CENTRAL_BANK_LTI_SOFT_MAX_HM;
+            buyToLetSoftMaxLTI = config.CENTRAL_BANK_LTI_SOFT_MAX_BTL;
             // Update affordability mandatory policy thresholds
             hardMaxAffordability = config.CENTRAL_BANK_AFFORDABILITY_HARD_MAX;
         }
@@ -99,27 +112,31 @@ public class CentralBank {
 
     //----- Getter/setter methods -----//
 
-    double getFirstTimeBuyerHardMaxLTV() { return firstTimeBuyerHardMaxLTV; }
+    double getFirstTimeBuyerSoftMaxLTV() { return firstTimeBuyerSoftMaxLTV; }
 
-    double getHomeMoverHardMaxLTV() { return homeMoverHardMaxLTV; }
+    double getHomeMoverSoftMaxLTV() { return homeMoverSoftMaxLTV; }
 
-    double getBuyToLetHardMaxLTV() { return buyToLetHardMaxLTV; }
+    double getBuyToLetSoftMaxLTV() { return buyToLetSoftMaxLTV; }
+
+    double getFirstTimeBuyerMaxFracOverSoftMaxLTV() { return firstTimeBuyerMaxFracOverSoftMaxLTV; }
+
+    double getHomeMoverMaxFracOverSoftMaxLTV() { return homeMoverMaxFracOverSoftMaxLTV; }
+
+    double getBuyToLetMaxFracOverSoftMaxLTV() { return buyToLetMaxFracOverSoftMaxLTV; }
 
     double getFirstTimeBuyerSoftMaxLTI() { return firstTimeBuyerSoftMaxLTI; }
 
     double getHomeMoverSoftMaxLTI() { return homeMoverSoftMaxLTI; }
 
-    /**
-     * Get the maximum fraction of mortgages to first-time buyers that can go over their Loan-To-Income soft limit.
-     */
+    double getBuyToLetSoftMaxLTI() { return buyToLetSoftMaxLTI; }
+
     double getFirstTimeBuyerMaxFracOverSoftMaxLTI() { return firstTimeBuyerMaxFracOverSoftMaxLTI; }
 
-    /**
-     * Get the maximum fraction of mortgages to home movers that can go over their Loan-To-Income soft limit.
-     */
     double getHomeMoverMaxFracOverSoftMaxLTI() { return homeMoverMaxFracOverSoftMaxLTI; }
 
-    int getMonthsToCheckLTI() { return monthsToCheckLTI; }
+    double getBuyToLetMaxFracOverSoftMaxLTI() { return buyToLetMaxFracOverSoftMaxLTI; }
+
+    int getMonthsToCheckSoftLimits() { return monthsToCheckSoftLimits; }
 
     double getHardMaxAffordability() { return hardMaxAffordability; }
 

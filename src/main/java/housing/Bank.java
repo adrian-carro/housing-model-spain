@@ -28,25 +28,53 @@ public class Bank {
     public HashSet<MortgageAgreement>   mortgages;                  // All unpaid mortgage contracts supplied by the bank
     private double                      interestSpread;             // Current mortgage interest spread above base rate (monthly rate*12)
 
+    // General soft limit tracking fields
+    private int                 nFTBMortgages_Prospec;          // Total number of prospective new mortgages to FTBs studied this month
+    private int                 nFTBMortgages_New;              // Total number of new mortgages to FTBs
+    private int                 nFTBMortgages_Acc;              // Total number of mortgages to FTBs accumulated over (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private ArrayList<Integer>  nFTBMortgages_List;             // List to store the number of new mortgages to FTBs for (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private int                 nHMMortgages_Prospec;           // Total number of prospective new mortgages to HMs
+    private int                 nHMMortgages_New;               // Total number of new mortgages to HMs
+    private int                 nHMMortgages_Acc;               // Total number of mortgages to HMs accumulated over (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private ArrayList<Integer>  nHMMortgages_List;              // List to store the number of new mortgages to HMs for (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private int                 nBTLMortgages_Prospec;          // Total number of prospective new mortgages to BTLs
+    private int                 nBTLMortgages_New;              // Total number of new mortgages to BTLs
+    private int                 nBTLMortgages_Acc;              // Total number of mortgages to BTLs accumulated over (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private ArrayList<Integer>  nBTLMortgages_List;             // List to store the number of new mortgages to BTLs for (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+
+    // LTV tracking fields
+    private int                 nFTBMortOverSoftMaxLTV_Prospec; // Number of prospective new mortgages to FTBs over the soft maximum LTV studied this month
+    private int                 nFTBMortOverSoftMaxLTV_New;     // Number of new mortgages to FTBs over the soft maximum LTV underwritten this month
+    private int                 nFTBMortOverSoftMaxLTV_Acc;     // Number of mortgages to FTBs over the soft maximum LTV accumulated over (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private ArrayList<Integer>  nFTBMortOverSoftMaxLTV_List;    // List to store the number of new mortgages to FTBs over the soft maximum LTV for (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private double              maxFracFTBProspecOverSoftMaxLTV;// Internal max fraction of FTB prospective mortgages over the soft maximum LTV in order to reach the target with actual mortgages
+    private int                 nHMMortOverSoftMaxLTV_Prospec;  // Number of prospective new mortgages to HMs over the soft maximum LTV
+    private int                 nHMMortOverSoftMaxLTV_New;      // Number of new mortgages to HMs over the soft maximum LTV
+    private int                 nHMMortOverSoftMaxLTV_Acc;      // Number of mortgages to HMs over the soft maximum LTV accumulated over (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private ArrayList<Integer>  nHMMortOverSoftMaxLTV_List;     // List to store the number of new mortgages to HMs over the soft maximum LTV for (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private double              maxFracHMProspecOverSoftMaxLTV; // Internal max fraction of HM prospective mortgages over the soft maximum LTV in order to reach the target with actual mortgages
+    private int                 nBTLMortOverSoftMaxLTV_Prospec; // Number of prospective new mortgages to BTLs over the soft maximum LTV
+    private int                 nBTLMortOverSoftMaxLTV_New;     // Number of new mortgages to BTLs over the soft maximum LTV
+    private int                 nBTLMortOverSoftMaxLTV_Acc;     // Number of mortgages to BTLs over the soft maximum LTV accumulated over (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private ArrayList<Integer>  nBTLMortOverSoftMaxLTV_List;    // List to store the number of new mortgages to BTLs over the soft maximum LTV for (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private double              maxFracBTLProspecOverSoftMaxLTV;// Internal max fraction of BTL prospective mortgages over the soft maximum LTV in order to reach the target with actual mortgages
+
     // LTI tracking fields
-    private int                 nFTBMortOverSoftMaxLTI_Prospec; // Number of prospective new mortgages to first-time buyers over the soft maximum LTI studied this month
-    private int                 nFTBMortOverSoftMaxLTI_New;     // Number of new mortgages to first-time buyers over the soft maximum LTI underwritten this month
-    private int                 nFTBMortOverSoftMaxLTI_Acc;     // Number of mortgages to FTBs over the soft maximum LTI accumulated over (CENTRAL_BANK_LTI_MONTHS_TO_CHECK - 1) months
-    private ArrayList<Integer>  nFTBMortOverSoftMaxLTI_List;    // List to store the number of new mortgages to FTBs over the soft maximum LTI for (CENTRAL_BANK_LTI_MONTHS_TO_CHECK - 1) months
-    private int                 nFTBMortgages_Prospec;          // Total number of prospective new mortgages to first-time buyers studied this month
-    private int                 nFTBMortgages_New;              // Total number of new mortgages to first-time buyers
-    private int                 nFTBMortgages_Acc;              // Total number of mortgages to FTBs accumulated over (CENTRAL_BANK_LTI_MONTHS_TO_CHECK - 1) months
-    private ArrayList<Integer>  nFTBMortgages_List;             // List to store the number of new mortgages to FTBs for (CENTRAL_BANK_LTI_MONTHS_TO_CHECK - 1) months
+    private int                 nFTBMortOverSoftMaxLTI_Prospec; // Number of prospective new mortgages to FTBs over the soft maximum LTI studied this month
+    private int                 nFTBMortOverSoftMaxLTI_New;     // Number of new mortgages to FTBs over the soft maximum LTI underwritten this month
+    private int                 nFTBMortOverSoftMaxLTI_Acc;     // Number of mortgages to FTBs over the soft maximum LTI accumulated over (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private ArrayList<Integer>  nFTBMortOverSoftMaxLTI_List;    // List to store the number of new mortgages to FTBs over the soft maximum LTI for (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
     private double              maxFracFTBProspecOverSoftMaxLTI;// Internal max fraction of FTB prospective mortgages over the soft maximum LTI in order to reach the target with actual mortgages
-    private int                 nHMMortOverSoftMaxLTI_Prospec;  // Number of prospective new mortgages to home movers over the soft maximum LTI
-    private int                 nHMMortOverSoftMaxLTI_New;      // Number of new mortgages to home movers over the soft maximum LTI
-    private int                 nHMMortOverSoftMaxLTI_Acc;      // Number of mortgages to HMs over the soft maximum LTI accumulated over (CENTRAL_BANK_LTI_MONTHS_TO_CHECK - 1) months
-    private ArrayList<Integer>  nHMMortOverSoftMaxLTI_List;     // List to store the number of new mortgages to HMs over the soft maximum LTI for (CENTRAL_BANK_LTI_MONTHS_TO_CHECK - 1) months
-    private int                 nHMMortgages_Prospec;           // Total number of prospective new mortgages to home movers
-    private int                 nHMMortgages_New;               // Total number of new mortgages to home movers
-    private int                 nHMMortgages_Acc;               // Total number of mortgages to HMs accumulated over (CENTRAL_BANK_LTI_MONTHS_TO_CHECK - 1) months
-    private ArrayList<Integer>  nHMMortgages_List;              // List to store the number of new mortgages to HMs for (CENTRAL_BANK_LTI_MONTHS_TO_CHECK - 1) months
+    private int                 nHMMortOverSoftMaxLTI_Prospec;  // Number of prospective new mortgages to HMs over the soft maximum LTI
+    private int                 nHMMortOverSoftMaxLTI_New;      // Number of new mortgages to HMs over the soft maximum LTI
+    private int                 nHMMortOverSoftMaxLTI_Acc;      // Number of mortgages to HMs over the soft maximum LTI accumulated over (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private ArrayList<Integer>  nHMMortOverSoftMaxLTI_List;     // List to store the number of new mortgages to HMs over the soft maximum LTI for (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
     private double              maxFracHMProspecOverSoftMaxLTI; // Internal max fraction of HM prospective mortgages over the soft maximum LTI in order to reach the target with actual mortgages
+    private int                 nBTLMortOverSoftMaxLTI_Prospec; // Number of prospective new mortgages to BTLs over the soft maximum LTI
+    private int                 nBTLMortOverSoftMaxLTI_New;     // Number of new mortgages to BTLs over the soft maximum LTI
+    private int                 nBTLMortOverSoftMaxLTI_Acc;     // Number of mortgages to BTLs over the soft maximum LTI accumulated over (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private ArrayList<Integer>  nBTLMortOverSoftMaxLTI_List;    // List to store the number of new mortgages to BTLs over the soft maximum LTI for (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months
+    private double              maxFracBTLProspecOverSoftMaxLTI;// Internal max fraction of BTL prospective mortgages over the soft maximum LTI in order to reach the target with actual mortgages
 
     // Credit supply strategy fields
     private double              monthlyCreditSupply;        // Monthly supply of mortgage lending (pounds)
@@ -66,6 +94,7 @@ public class Bank {
     // LTI internal policy thresholds
     private double              firstTimeBuyerHardMaxLTI;   // Loan-To-Income hard maximum for first-time buyer mortgages
     private double              homeMoverHardMaxLTI;        // Loan-To-Income hard maximum for home mover mortgages
+    private double              buyToLetHardMaxLTI;         // Loan-To-Income hard maximum for home mover mortgages
 
     // Affordability internal policy thresholds
     private double              hardMaxAffordability;       // Affordability hard maximum (monthly mortgage payment / household's monthly net employment income)
@@ -80,10 +109,18 @@ public class Bank {
     public Bank(CentralBank centralBank) {
         this.centralBank = centralBank;
         mortgages = new HashSet<>();
-        nFTBMortOverSoftMaxLTI_List = new ArrayList<>();
+        // General soft limits
         nFTBMortgages_List = new ArrayList<>();
-        nHMMortOverSoftMaxLTI_List = new ArrayList<>();
         nHMMortgages_List = new ArrayList<>();
+        nBTLMortgages_List = new ArrayList<>();
+        // LTV soft limits
+        nFTBMortOverSoftMaxLTV_List = new ArrayList<>();
+        nHMMortOverSoftMaxLTV_List = new ArrayList<>();
+        nBTLMortOverSoftMaxLTV_List = new ArrayList<>();
+        // LTI soft limits
+        nFTBMortOverSoftMaxLTI_List = new ArrayList<>();
+        nHMMortOverSoftMaxLTI_List = new ArrayList<>();
+        nBTLMortOverSoftMaxLTI_List = new ArrayList<>();
     }
 
     //-------------------//
@@ -92,7 +129,7 @@ public class Bank {
 
     void init() {
         mortgages.clear();
-        initLTICounters();
+        initSoftLimitCounters();
         setMortgageInterestRate(config.BANK_INITIAL_RATE); // Central Bank must already be initiated at this point!
         resetMonthlyCounters();
         monthlyCreditSupplyOld = config.BANK_INITIAL_CREDIT_SUPPLY * config.TARGET_POPULATION;
@@ -109,35 +146,68 @@ public class Bank {
         // Setup initial LTI internal policy thresholds
         firstTimeBuyerHardMaxLTI = config.BANK_LTI_HARD_MAX_FTB;
         homeMoverHardMaxLTI = config.BANK_LTI_HARD_MAX_HM;
+        buyToLetHardMaxLTI = config.BANK_LTI_HARD_MAX_BTL;
         // Set initial affordability internal policy thresholds
         hardMaxAffordability = config.BANK_AFFORDABILITY_HARD_MAX;
         // Set initial ICR internal policy thresholds
         hardMinICR = config.BANK_ICR_HARD_MIN;
     }
 
-    private void initLTICounters() {
-        nFTBMortOverSoftMaxLTI_Prospec = 0;
-        nFTBMortOverSoftMaxLTI_New = 0;
-        nFTBMortOverSoftMaxLTI_Acc = 0;
-        nFTBMortOverSoftMaxLTI_List.clear();
-        nFTBMortOverSoftMaxLTI_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckLTI() - 1, 0));
+    private void initSoftLimitCounters() {
+        // General soft limits
         nFTBMortgages_Prospec= 0;
         nFTBMortgages_New = 0;
         nFTBMortgages_Acc = 0;
         nFTBMortgages_List.clear();
-        nFTBMortgages_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckLTI() - 1, 0));
+        nFTBMortgages_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckSoftLimits() - 1, 0));
+        nHMMortgages_Prospec = 0;
+        nHMMortgages_New = 0;
+        nHMMortgages_Acc = 0;
+        nHMMortgages_List.clear();
+        nHMMortgages_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckSoftLimits() - 1, 0));
+        nBTLMortgages_Prospec = 0;
+        nBTLMortgages_New = 0;
+        nBTLMortgages_Acc = 0;
+        nBTLMortgages_List.clear();
+        nBTLMortgages_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckSoftLimits() - 1, 0));
+        // LTV soft limits
+        nFTBMortOverSoftMaxLTV_Prospec = 0;
+        nFTBMortOverSoftMaxLTV_New = 0;
+        nFTBMortOverSoftMaxLTV_Acc = 0;
+        nFTBMortOverSoftMaxLTV_List.clear();
+        nFTBMortOverSoftMaxLTV_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckSoftLimits() - 1, 0));
+        maxFracFTBProspecOverSoftMaxLTV = centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTV();
+        nHMMortOverSoftMaxLTV_Prospec = 0;
+        nHMMortOverSoftMaxLTV_New = 0;
+        nHMMortOverSoftMaxLTV_Acc = 0;
+        nHMMortOverSoftMaxLTV_List.clear();
+        nHMMortOverSoftMaxLTV_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckSoftLimits() - 1, 0));
+        maxFracHMProspecOverSoftMaxLTV = centralBank.getHomeMoverMaxFracOverSoftMaxLTV();
+        nBTLMortOverSoftMaxLTV_Prospec = 0;
+        nBTLMortOverSoftMaxLTV_New = 0;
+        nBTLMortOverSoftMaxLTV_Acc = 0;
+        nBTLMortOverSoftMaxLTV_List.clear();
+        nBTLMortOverSoftMaxLTV_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckSoftLimits() - 1, 0));
+        maxFracBTLProspecOverSoftMaxLTV = centralBank.getBuyToLetMaxFracOverSoftMaxLTV();
+        // LTI soft limits
+        nFTBMortOverSoftMaxLTI_Prospec = 0;
+        nFTBMortOverSoftMaxLTI_New = 0;
+        nFTBMortOverSoftMaxLTI_Acc = 0;
+        nFTBMortOverSoftMaxLTI_List.clear();
+        nFTBMortOverSoftMaxLTI_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckSoftLimits() - 1, 0));
         maxFracFTBProspecOverSoftMaxLTI = centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTI();
         nHMMortOverSoftMaxLTI_Prospec = 0;
         nHMMortOverSoftMaxLTI_New = 0;
         nHMMortOverSoftMaxLTI_Acc = 0;
         nHMMortOverSoftMaxLTI_List.clear();
-        nHMMortOverSoftMaxLTI_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckLTI() - 1, 0));
-        nHMMortgages_Prospec = 0;
-        nHMMortgages_New = 0;
-        nHMMortgages_Acc = 0;
-        nHMMortgages_List.clear();
-        nHMMortgages_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckLTI() - 1, 0));
+        nHMMortOverSoftMaxLTI_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckSoftLimits() - 1, 0));
         maxFracHMProspecOverSoftMaxLTI = centralBank.getHomeMoverMaxFracOverSoftMaxLTI();
+        nBTLMortOverSoftMaxLTI_Prospec = 0;
+        nBTLMortOverSoftMaxLTI_New = 0;
+        nBTLMortOverSoftMaxLTI_Acc = 0;
+        nBTLMortOverSoftMaxLTI_List.clear();
+        nBTLMortOverSoftMaxLTI_List.addAll(Collections.nCopies(centralBank.getMonthsToCheckSoftLimits() - 1, 0));
+        maxFracBTLProspecOverSoftMaxLTI = centralBank.getBuyToLetMaxFracOverSoftMaxLTI();
     }
 
     /**
@@ -154,60 +224,113 @@ public class Bank {
      *  Reset counters for the next month.
      */
     private void resetMonthlyCounters() {
+        // Reset the maximum fractions of prospective mortgages over their soft LTV limits, with a single result in case
+        // the maximum fractions of actual mortgages are the same
+        if ((centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTV() == centralBank.getHomeMoverMaxFracOverSoftMaxLTV()) &&
+                (centralBank.getHomeMoverMaxFracOverSoftMaxLTV() == centralBank.getBuyToLetMaxFracOverSoftMaxLTV())) {
+            maxFracFTBProspecOverSoftMaxLTV = getNextMaxFracProspecOverSoftMaxLimit(
+                    (nFTBMortOverSoftMaxLTV_Acc + nHMMortOverSoftMaxLTV_Acc + nBTLMortOverSoftMaxLTV_Acc),
+                    (nFTBMortOverSoftMaxLTV_New + nHMMortOverSoftMaxLTV_New + nBTLMortOverSoftMaxLTV_New),
+                    (nFTBMortgages_Acc + nHMMortgages_Acc + nBTLMortgages_Acc),
+                    (nFTBMortgages_New + nHMMortgages_New + nBTLMortgages_New),
+                    centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTV());
+            // TODO: Convenient to update also the HM and BTL equivalent variables? Setting them to null to avoid unexpected errors?
+        } else {
+            maxFracFTBProspecOverSoftMaxLTV = getNextMaxFracProspecOverSoftMaxLimit(nFTBMortOverSoftMaxLTV_Acc,
+                    nFTBMortOverSoftMaxLTV_New, nFTBMortgages_Acc, nFTBMortgages_New,
+                    centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTV());
+            maxFracHMProspecOverSoftMaxLTV = getNextMaxFracProspecOverSoftMaxLimit(nHMMortOverSoftMaxLTV_Acc,
+                    nHMMortOverSoftMaxLTV_New, nHMMortgages_Acc, nHMMortgages_New,
+                    centralBank.getHomeMoverMaxFracOverSoftMaxLTV());
+            maxFracBTLProspecOverSoftMaxLTV = getNextMaxFracProspecOverSoftMaxLimit(nBTLMortOverSoftMaxLTV_Acc,
+                    nBTLMortOverSoftMaxLTV_New, nBTLMortgages_Acc, nBTLMortgages_New,
+                    centralBank.getBuyToLetMaxFracOverSoftMaxLTV());
+        }
         // Reset the maximum fractions of prospective mortgages over their soft LTI limits, with a single result in case
         // the maximum fractions of actual mortgages are the same
-        if (centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTI() == centralBank.getHomeMoverMaxFracOverSoftMaxLTI()) {
-            maxFracFTBProspecOverSoftMaxLTI = getNextMaxFracProspecOverSoftMaxLTI(
-                    (nFTBMortOverSoftMaxLTI_Acc + nHMMortOverSoftMaxLTI_Acc),
-                    (nFTBMortOverSoftMaxLTI_New + nHMMortOverSoftMaxLTI_New), (nFTBMortgages_Acc + nHMMortgages_Acc),
-                    (nFTBMortgages_New + nHMMortgages_New), centralBank.getHomeMoverMaxFracOverSoftMaxLTI());
+        if ((centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTI() == centralBank.getHomeMoverMaxFracOverSoftMaxLTI()) &&
+                (centralBank.getHomeMoverMaxFracOverSoftMaxLTI() == centralBank.getBuyToLetMaxFracOverSoftMaxLTI())) {
+            maxFracFTBProspecOverSoftMaxLTI = getNextMaxFracProspecOverSoftMaxLimit(
+                    (nFTBMortOverSoftMaxLTI_Acc + nHMMortOverSoftMaxLTI_Acc + nBTLMortOverSoftMaxLTI_Acc),
+                    (nFTBMortOverSoftMaxLTI_New + nHMMortOverSoftMaxLTI_New + nBTLMortOverSoftMaxLTI_New),
+                    (nFTBMortgages_Acc + nHMMortgages_Acc + nBTLMortgages_Acc),
+                    (nFTBMortgages_New + nHMMortgages_New + nBTLMortgages_New),
+                    centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTI());
+            // TODO: Convenient to update also the HM and BTL equivalent variables? Setting them to null to avoid unexpected errors?
         } else {
-            maxFracFTBProspecOverSoftMaxLTI = getNextMaxFracProspecOverSoftMaxLTI( nFTBMortOverSoftMaxLTI_Acc,
+            maxFracFTBProspecOverSoftMaxLTI = getNextMaxFracProspecOverSoftMaxLimit(nFTBMortOverSoftMaxLTI_Acc,
                     nFTBMortOverSoftMaxLTI_New, nFTBMortgages_Acc, nFTBMortgages_New,
                     centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTI());
-            maxFracHMProspecOverSoftMaxLTI = getNextMaxFracProspecOverSoftMaxLTI(nHMMortOverSoftMaxLTI_Acc,
+            maxFracHMProspecOverSoftMaxLTI = getNextMaxFracProspecOverSoftMaxLimit(nHMMortOverSoftMaxLTI_Acc,
                     nHMMortOverSoftMaxLTI_New, nHMMortgages_Acc, nHMMortgages_New,
                     centralBank.getHomeMoverMaxFracOverSoftMaxLTI());
+            maxFracBTLProspecOverSoftMaxLTI = getNextMaxFracProspecOverSoftMaxLimit(nBTLMortOverSoftMaxLTI_Acc,
+                    nBTLMortOverSoftMaxLTI_New, nBTLMortgages_Acc, nBTLMortgages_New,
+                    centralBank.getBuyToLetMaxFracOverSoftMaxLTI());
         }
         // Reset to zero the monthly credit supply counter
         monthlyCreditSupply = 0.0;
-        // Reset moving counter of first-time buyer mortgages over their soft maximum LTI
-        nFTBMortOverSoftMaxLTI_Prospec = 0;
-        nFTBMortOverSoftMaxLTI_Acc -= nFTBMortOverSoftMaxLTI_List.remove(0); // Remove oldest month from list and subtract it from accumulated sum
-        nFTBMortOverSoftMaxLTI_Acc += nFTBMortOverSoftMaxLTI_New; // Add most recent month to accumulated sum
-        nFTBMortOverSoftMaxLTI_List.add(nFTBMortOverSoftMaxLTI_New); // Add most recent month to list
-        nFTBMortOverSoftMaxLTI_New = 0; // Reset new mortgages counter to zero for next time step
-        // Reset moving counter of first-time buyer mortgages
+        // Reset general moving counters for tracking mortgages
         nFTBMortgages_Prospec= 0;
-        nFTBMortgages_Acc -= nFTBMortgages_List.remove(0); // Remove oldest month from list and subtract it from accumulated sum
+        nFTBMortgages_Acc -= nFTBMortgages_List.remove(0); // Remove the oldest month from list and subtract it from accumulated sum
         nFTBMortgages_Acc += nFTBMortgages_New; // Add most recent month to accumulated sum
         nFTBMortgages_List.add(nFTBMortgages_New); // Add most recent month to list
         nFTBMortgages_New = 0; // Reset new mortgages counter to zero for next time step
-        // Reset moving counter of home mover mortgages over their soft maximum LTI
-        nHMMortOverSoftMaxLTI_Prospec = 0;
-        nHMMortOverSoftMaxLTI_Acc -= nHMMortOverSoftMaxLTI_List.remove(0); // Remove oldest month from list and subtract it from accumulated sum
-        nHMMortOverSoftMaxLTI_Acc += nHMMortOverSoftMaxLTI_New; // Add most recent month to accumulated sum
-        nHMMortOverSoftMaxLTI_List.add(nHMMortOverSoftMaxLTI_New); // Add most recent month to list
-        nHMMortOverSoftMaxLTI_New = 0; // Reset new mortgages counter to zero for next time step
-        // Reset moving counter of home mover mortgages
         nHMMortgages_Prospec = 0;
-        nHMMortgages_Acc -= nHMMortgages_List.remove(0); // Remove oldest month from list and subtract it from accumulated sum
+        nHMMortgages_Acc -= nHMMortgages_List.remove(0); // Remove the oldest month from list and subtract it from accumulated sum
         nHMMortgages_Acc += nHMMortgages_New; // Add most recent month to accumulated sum
         nHMMortgages_List.add(nHMMortgages_New); // Add most recent month to list
         nHMMortgages_New = 0; // Reset new mortgages counter to zero for next time step
+        nBTLMortgages_Prospec = 0;
+        nBTLMortgages_Acc -= nBTLMortgages_List.remove(0); // Remove the oldest month from list and subtract it from accumulated sum
+        nBTLMortgages_Acc += nBTLMortgages_New; // Add most recent month to accumulated sum
+        nBTLMortgages_List.add(nBTLMortgages_New); // Add most recent month to list
+        nBTLMortgages_New = 0; // Reset new mortgages counter to zero for next time step
+        // Reset moving counters for mortgages over their soft maximum LTV
+        nFTBMortOverSoftMaxLTV_Prospec = 0;
+        nFTBMortOverSoftMaxLTV_Acc -= nFTBMortOverSoftMaxLTV_List.remove(0); // Remove the oldest month from list and subtract it from accumulated sum
+        nFTBMortOverSoftMaxLTV_Acc += nFTBMortOverSoftMaxLTV_New; // Add most recent month to accumulated sum
+        nFTBMortOverSoftMaxLTV_List.add(nFTBMortOverSoftMaxLTV_New); // Add most recent month to list
+        nFTBMortOverSoftMaxLTV_New = 0; // Reset new mortgages counter to zero for next time step
+        nHMMortOverSoftMaxLTV_Prospec = 0;
+        nHMMortOverSoftMaxLTV_Acc -= nHMMortOverSoftMaxLTV_List.remove(0); // Remove the oldest month from list and subtract it from accumulated sum
+        nHMMortOverSoftMaxLTV_Acc += nHMMortOverSoftMaxLTV_New; // Add most recent month to accumulated sum
+        nHMMortOverSoftMaxLTV_List.add(nHMMortOverSoftMaxLTV_New); // Add most recent month to list
+        nHMMortOverSoftMaxLTV_New = 0; // Reset new mortgages counter to zero for next time step
+        nBTLMortOverSoftMaxLTV_Prospec = 0;
+        nBTLMortOverSoftMaxLTV_Acc -= nBTLMortOverSoftMaxLTV_List.remove(0); // Remove the oldest month from list and subtract it from accumulated sum
+        nBTLMortOverSoftMaxLTV_Acc += nBTLMortOverSoftMaxLTV_New; // Add most recent month to accumulated sum
+        nBTLMortOverSoftMaxLTV_List.add(nBTLMortOverSoftMaxLTV_New); // Add most recent month to list
+        nBTLMortOverSoftMaxLTV_New = 0; // Reset new mortgages counter to zero for next time step
+        // Reset moving counters for mortgages over their soft maximum LTI
+        nFTBMortOverSoftMaxLTI_Prospec = 0;
+        nFTBMortOverSoftMaxLTI_Acc -= nFTBMortOverSoftMaxLTI_List.remove(0); // Remove the oldest month from list and subtract it from accumulated sum
+        nFTBMortOverSoftMaxLTI_Acc += nFTBMortOverSoftMaxLTI_New; // Add most recent month to accumulated sum
+        nFTBMortOverSoftMaxLTI_List.add(nFTBMortOverSoftMaxLTI_New); // Add most recent month to list
+        nFTBMortOverSoftMaxLTI_New = 0; // Reset new mortgages counter to zero for next time step
+        nHMMortOverSoftMaxLTI_Prospec = 0;
+        nHMMortOverSoftMaxLTI_Acc -= nHMMortOverSoftMaxLTI_List.remove(0); // Remove the oldest month from list and subtract it from accumulated sum
+        nHMMortOverSoftMaxLTI_Acc += nHMMortOverSoftMaxLTI_New; // Add most recent month to accumulated sum
+        nHMMortOverSoftMaxLTI_List.add(nHMMortOverSoftMaxLTI_New); // Add most recent month to list
+        nHMMortOverSoftMaxLTI_New = 0; // Reset new mortgages counter to zero for next time step
+        nBTLMortOverSoftMaxLTI_Prospec = 0;
+        nBTLMortOverSoftMaxLTI_Acc -= nBTLMortOverSoftMaxLTI_List.remove(0); // Remove the oldest month from list and subtract it from accumulated sum
+        nBTLMortOverSoftMaxLTI_Acc += nBTLMortOverSoftMaxLTI_New; // Add most recent month to accumulated sum
+        nBTLMortOverSoftMaxLTI_List.add(nBTLMortOverSoftMaxLTI_New); // Add most recent month to list
+        nBTLMortOverSoftMaxLTI_New = 0; // Reset new mortgages counter to zero for next time step
     }
 
     /**
      * Plan next month's fraction of approval in principle letters over the soft limit so as to match the target
      * fraction of actual mortgages over the soft limit
      */
-    private double getNextMaxFracProspecOverSoftMaxLTI(int nMortOverSoftMaxLTI_Acc, int nMortOverSoftMaxLTI_New,
-                                                       int nMortgages_Acc, int nMortgages_New,
-                                                       double centralBankLimit) {
-        // First compute the current fraction of actual mortgages over the corresponding soft LTI limit
+    private double getNextMaxFracProspecOverSoftMaxLimit(int nMortOverSoftMaxLimit_Acc, int nMortOverSoftMaxLimit_New,
+                                                         int nMortgages_Acc, int nMortgages_New,
+                                                         double centralBankLimit) {
+        // First compute the current fraction of actual mortgages over the corresponding soft limit
         double actualFraction;
         if (nMortgages_Acc + nMortgages_New > 0) {
-            actualFraction = (double) (nMortOverSoftMaxLTI_Acc + nMortOverSoftMaxLTI_New)
+            actualFraction = (double) (nMortOverSoftMaxLimit_Acc + nMortOverSoftMaxLimit_New)
                     / (nMortgages_Acc + nMortgages_New);
         } else {
             actualFraction = 0;
@@ -316,22 +439,38 @@ public class Bank {
             monthlyCreditSupply += approval.principal;
             // ...update various statistics at CreditSupply
             Model.creditSupply.recordLoan(h, approval);
-            // ... count the number of non-BTL mortgages over the soft LTI limit imposed by the Central Bank...
+            // ...count the number of mortgages over the soft limits imposed by the Central Bank...
             if (isHome) {
                 // ...differentiating between first-time buyers
                 if (h.isFirstTimeBuyer()) {
                     ++nFTBMortgages_New;
+                    if (approval.principal > housePrice * centralBank.getFirstTimeBuyerSoftMaxLTV()) {
+                        ++nFTBMortOverSoftMaxLTV_New;
+                    }
                     if (approval.principal > h.getAnnualGrossEmploymentIncome()
                             * centralBank.getFirstTimeBuyerSoftMaxLTI()) {
                         ++nFTBMortOverSoftMaxLTI_New;
                     }
-                // ...and home movers
+                // ...home movers
                 } else {
                     ++nHMMortgages_New;
+                    if (approval.principal > housePrice * centralBank.getHomeMoverSoftMaxLTV()) {
+                        ++nHMMortOverSoftMaxLTV_New;
+                    }
                     if (approval.principal > h.getAnnualGrossEmploymentIncome()
                             * centralBank.getHomeMoverSoftMaxLTI()) {
                         ++nHMMortOverSoftMaxLTI_New;
                     }
+                }
+            } else {
+                // ...and buy-to-let investors
+                ++nBTLMortgages_New;
+                if (approval.principal > housePrice * centralBank.getBuyToLetSoftMaxLTV()) {
+                    ++nBTLMortOverSoftMaxLTV_New;
+                }
+                if (approval.principal > h.getAnnualGrossEmploymentIncome()
+                        * centralBank.getBuyToLetSoftMaxLTI()) {
+                    ++nBTLMortOverSoftMaxLTI_New;
                 }
             }
         }
@@ -518,40 +657,120 @@ public class Bank {
 
     //----- Mortgage policy methods -----//
 
-    /**
-     * Get the Loan-To-Value ratio limit currently applicable to a given type of household (first-time buyer, home mover
-     * or buy-to-let investor). Note that this limit is defined as the minimum between the private bank self-imposed
-     * internal policy limit and the central bank mandatory policy limit.
-     *
-     * @param isFirstTimeBuyer True if the household is a first-time buyer
-     * @param isHome True if the mortgage is to buy a home for the household (non-BTL mortgage)
-     * @return The Loan-To-Value ratio limit applicable to this type of household
-     */
     double getLoanToValueLimit(boolean isFirstTimeBuyer, boolean isHome) {
+
+        // First, the private bank assigns an internal LTV limit according to its internal policy
+        double internalLTV;
         if (isHome) {
             if (isFirstTimeBuyer) {
                 if (prng.nextDouble() < firstTimeBuyerFracOverSoftMaxLTV) {
-                    return Math.min(firstTimeBuyerSoftMaxLTV
-                                    + (firstTimeBuyerHardMaxLTV - firstTimeBuyerSoftMaxLTV) * prng.nextDouble(),
-                            centralBank.getFirstTimeBuyerHardMaxLTV());
+                    internalLTV = firstTimeBuyerSoftMaxLTV
+                            + (firstTimeBuyerHardMaxLTV - firstTimeBuyerSoftMaxLTV) * prng.nextDouble();
                 } else {
-                    return Math.min(firstTimeBuyerSoftMaxLTV, centralBank.getFirstTimeBuyerHardMaxLTV());
+                    internalLTV = firstTimeBuyerSoftMaxLTV;
                 }
             } else {
                 if (prng.nextDouble() < homeMoverFracOverSoftMaxLTV) {
-                    return Math.min(homeMoverSoftMaxLTV
-                                    + (homeMoverHardMaxLTV - homeMoverSoftMaxLTV) * prng.nextDouble(),
-                            centralBank.getHomeMoverHardMaxLTV());
+                    internalLTV = homeMoverSoftMaxLTV
+                            + (homeMoverHardMaxLTV - homeMoverSoftMaxLTV) * prng.nextDouble();
                 } else {
-                    return Math.min(homeMoverSoftMaxLTV, centralBank.getHomeMoverHardMaxLTV());
+                    internalLTV = homeMoverSoftMaxLTV;
                 }
             }
         } else {
             if (prng.nextDouble() < buyToLetFracOverSoftMaxLTV) {
-                return Math.min(buyToLetSoftMaxLTV + (buyToLetHardMaxLTV - buyToLetSoftMaxLTV) * prng.nextDouble(),
-                        centralBank.getBuyToLetHardMaxLTV());
+                internalLTV = buyToLetSoftMaxLTV + (buyToLetHardMaxLTV - buyToLetSoftMaxLTV) * prng.nextDouble();
             } else {
-                return Math.min(buyToLetSoftMaxLTV, centralBank.getBuyToLetHardMaxLTV());
+                internalLTV = buyToLetSoftMaxLTV;
+            }
+        }
+
+        // If this internally assigned limit is not above the soft limit imposed by the Central Bank, then simply return
+        // this internally assigned limit
+        if (isHome) {
+            if (isFirstTimeBuyer) {
+                if (internalLTV <= centralBank.getFirstTimeBuyerSoftMaxLTV()) {
+                    return internalLTV;
+                }
+            } else {
+                if (internalLTV <= centralBank.getHomeMoverSoftMaxLTV()) {
+                    return internalLTV;
+                }
+            }
+        } else {
+            if (internalLTV <= centralBank.getBuyToLetSoftMaxLTV()) {
+                return internalLTV;
+            }
+        }
+
+        // Otherwise, if the internally assigned limit is above the soft limit set by the Central Bank, assess whether
+        // to impose this soft limit or go ahead with the internally assigned one
+        // If the maximum fractions of mortgages over their soft LTV limits allowed by the Central Bank for FTBs, HMs
+        // and BTLs are the same, then the quota is shared by FTBs, HMs and BTLs, instead of having separate quotas
+        if ((centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTV() == centralBank.getHomeMoverMaxFracOverSoftMaxLTV()) &&
+                (centralBank.getHomeMoverMaxFracOverSoftMaxLTV() == centralBank.getBuyToLetMaxFracOverSoftMaxLTV())) {
+            // If this mortgage could bring the fraction of mortgages underwritten over the Central Bank LTV soft limit
+            // to exceed the maximum fraction established by the Central Bank...
+            if (((double)(nFTBMortOverSoftMaxLTV_Prospec + nHMMortOverSoftMaxLTV_Prospec + nBTLMortOverSoftMaxLTV_Prospec + 1)
+                    / (nFTBMortgages_Prospec + nHMMortgages_Prospec + nBTLMortgages_Prospec + 1) > maxFracFTBProspecOverSoftMaxLTV)) {
+                // ... then use the Central Bank soft limit
+                if (isHome) {
+                    if (isFirstTimeBuyer) {
+                        return centralBank.getFirstTimeBuyerSoftMaxLTV();
+                    } else {
+                        return centralBank.getHomeMoverSoftMaxLTV();
+                    }
+                } else {
+                    return centralBank.getBuyToLetSoftMaxLTV();
+                }
+            // ...otherwise...
+            } else {
+                // ...simply use the private bank assigned internal limit
+                return internalLTV;
+            }
+        // Otherwise, FTBs, HMs and BTLs keep separate quotas for mortgages over their respective LTV limits
+        } else {
+            if (isHome) {
+                // For first-time buyers...
+                if (isFirstTimeBuyer) {
+                    // ...if this mortgage could bring the fraction of mortgages underwritten over the Central Bank LTV
+                    // soft limit to exceed the maximum fraction established by the Central Bank...
+                    if (((double) (nFTBMortOverSoftMaxLTV_Prospec + 1) / (nFTBMortgages_Prospec + 1)
+                            > maxFracFTBProspecOverSoftMaxLTV)) {
+                        // ... then use the Central Bank soft limit
+                        return centralBank.getFirstTimeBuyerSoftMaxLTV();
+                    // ...otherwise...
+                    } else {
+                        // ...simply use the private bank assigned internal limit
+                        return internalLTV;
+                    }
+                // For home movers...
+                } else {
+                    // ...if this mortgage could bring the fraction of mortgages underwritten over the Central Bank LTV
+                    // soft limit to exceed the maximum fraction established by the Central Bank...
+                    if (((double) (nHMMortOverSoftMaxLTV_Prospec + 1) / (nHMMortgages_Prospec + 1)
+                            > maxFracHMProspecOverSoftMaxLTV)) {
+                        // ... then use the Central Bank soft limit
+                        return centralBank.getHomeMoverSoftMaxLTV();
+                    // ...otherwise...
+                    } else {
+                        // ...simply use the private bank assigned internal limit
+                        return internalLTV;
+                    }
+                }
+            // For buy-to-let investors...
+            } else {
+                // ...if this mortgage could bring the fraction of mortgages underwritten over the Central Bank LTV soft
+                // limit to exceed the maximum fraction established by the Central Bank...
+                if (((double) (nBTLMortOverSoftMaxLTV_Prospec + 1) / (nBTLMortgages_Prospec + 1)
+                        > maxFracBTLProspecOverSoftMaxLTV)) {
+                    // ... then use the Central Bank soft limit
+                    return centralBank.getBuyToLetSoftMaxLTV();
+                // ...otherwise...
+                } else {
+                    // ...simply use the private bank assigned internal limit
+                    return internalLTV;
+                }
             }
         }
     }
@@ -560,6 +779,46 @@ public class Bank {
      * Get the Loan-To-Value ratio limit currently applicable to a given type of household (first-time buyer, home mover
      * or buy-to-let investor). Note that this limit is defined as the minimum between the private bank self-imposed
      * internal policy limit and the central bank mandatory policy limit.
+     * Note that this old implementation uses the soft limits as if they were hard limits.
+     *
+     * @param isFirstTimeBuyer True if the household is a first-time buyer
+     * @param isHome True if the mortgage is to buy a home for the household (non-BTL mortgage)
+     * @return The Loan-To-Value ratio limit applicable to this type of household
+     */
+    double getLoanToValueLimitHard(boolean isFirstTimeBuyer, boolean isHome) {
+        if (isHome) {
+            if (isFirstTimeBuyer) {
+                if (prng.nextDouble() < firstTimeBuyerFracOverSoftMaxLTV) {
+                    return Math.min(firstTimeBuyerSoftMaxLTV
+                                    + (firstTimeBuyerHardMaxLTV - firstTimeBuyerSoftMaxLTV) * prng.nextDouble(),
+                            centralBank.getFirstTimeBuyerSoftMaxLTV());
+                } else {
+                    return Math.min(firstTimeBuyerSoftMaxLTV, centralBank.getFirstTimeBuyerSoftMaxLTV());
+                }
+            } else {
+                if (prng.nextDouble() < homeMoverFracOverSoftMaxLTV) {
+                    return Math.min(homeMoverSoftMaxLTV
+                                    + (homeMoverHardMaxLTV - homeMoverSoftMaxLTV) * prng.nextDouble(),
+                            centralBank.getHomeMoverSoftMaxLTV());
+                } else {
+                    return Math.min(homeMoverSoftMaxLTV, centralBank.getHomeMoverSoftMaxLTV());
+                }
+            }
+        } else {
+            if (prng.nextDouble() < buyToLetFracOverSoftMaxLTV) {
+                return Math.min(buyToLetSoftMaxLTV + (buyToLetHardMaxLTV - buyToLetSoftMaxLTV) * prng.nextDouble(),
+                        centralBank.getBuyToLetSoftMaxLTV());
+            } else {
+                return Math.min(buyToLetSoftMaxLTV, centralBank.getBuyToLetSoftMaxLTV());
+            }
+        }
+    }
+
+    /**
+     * Get the Loan-To-Value ratio limit currently applicable to a given type of household (first-time buyer, home mover
+     * or buy-to-let investor). Note that this limit is defined as the minimum between the private bank self-imposed
+     * internal policy limit and the central bank mandatory policy limit.
+     * Note that this old implementation uses the soft limits as if they were hard limits.
      *
      * @param isFirstTimeBuyer True if the household is a first-time buyer
      * @param isHome True if the mortgage is to buy a home for the household (non-BTL mortgage)
@@ -568,77 +827,102 @@ public class Bank {
     private double getLoanToValueLimitOld(boolean isFirstTimeBuyer, boolean isHome) {
         if (isHome) {
             if (isFirstTimeBuyer) {
-                return Math.min(firstTimeBuyerHardMaxLTV, centralBank.getFirstTimeBuyerHardMaxLTV());
+                return Math.min(firstTimeBuyerHardMaxLTV, centralBank.getFirstTimeBuyerSoftMaxLTV());
             } else {
-                return Math.min(homeMoverHardMaxLTV, centralBank.getHomeMoverHardMaxLTV());
+                return Math.min(homeMoverHardMaxLTV, centralBank.getHomeMoverSoftMaxLTV());
             }
         }
-        return Math.min(buyToLetHardMaxLTV, centralBank.getBuyToLetHardMaxLTV());
+        return Math.min(buyToLetHardMaxLTV, centralBank.getBuyToLetSoftMaxLTV());
     }
 
     /**
-     * Get the Loan-To-Income ratio limit currently applicable to a given type of household, whether first-time buyer or
-     * home mover (that is, this constraint is applicable only to non-BTL mortgages). The private bank always imposes
-     * its own internal hard limit. Apart from this, it also imposes the Central Bank regulated soft limit, which allows
-     * for a certain fraction of non-BTL loans to go over this soft limit. This fraction of mortgages allowed to exceed
-     * the soft limit is measure on a rolling basis with a window of (CENTRAL_BANK_LTI_MONTHS_TO_CHECK - 1) months
-     * previous to the current one plus the current one.
+     * Get the Loan-To-Income ratio limit currently applicable to a given type of household, whether first-time buyer,
+     * home mover or buy-to-let investor. The private bank always imposes its own internal hard limit. Apart from this,
+     * it also imposes the Central Bank regulated soft limit, which allows for a certain fraction of loans to go over
+     * this soft limit. This fraction of mortgages allowed to exceed the soft limit is measured on a rolling basis with
+     * a window of (CENTRAL_BANK_SOFT_POLICIES_MONTHS_TO_CHECK - 1) months previous to the current one plus the current
+     * one.
      *
      * @param isFirstTimeBuyer True if the household is a first-time buyer
+     * @param isHome True if the mortgage is to buy a home for the household (non-BTL mortgage)
      * @return The Loan-To-Income ratio limit currently applicable to this type of household
      */
-    double getLoanToIncomeLimit(boolean isFirstTimeBuyer) {
+    double getLoanToIncomeLimit(boolean isFirstTimeBuyer, boolean isHome) {
 
-        // If the maximum fractions of mortgages over their soft LTI limits allowed by the Central Bank for FTBs and HMs
-        // are the same, then the quota is shared by FTBs and HMs, instead of having separate quotas
-        if (centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTI() == centralBank.getHomeMoverMaxFracOverSoftMaxLTI()) {
-            // If this mortgage could bring the fraction of mortgages (FTB + HM) underwritten over the Central Bank LTI
-            // soft limit to exceed the maximum fraction established by the Central Bank (same for FTB and HM)...
-            if (((double)(nFTBMortOverSoftMaxLTI_Prospec + nHMMortOverSoftMaxLTI_Prospec + 1)
-                    / (nFTBMortgages_Prospec + nHMMortgages_Prospec + 1) > maxFracFTBProspecOverSoftMaxLTI)) {
+        // If the maximum fractions of mortgages over their soft LTI limits allowed by the Central Bank for FTBs, HMs
+        // and BTLs are the same, then the quota is shared by FTBs, HMs and BTLs, instead of having separate quotas
+        if ((centralBank.getFirstTimeBuyerMaxFracOverSoftMaxLTI() == centralBank.getHomeMoverMaxFracOverSoftMaxLTI()) &&
+                (centralBank.getHomeMoverMaxFracOverSoftMaxLTI() == centralBank.getBuyToLetMaxFracOverSoftMaxLTI())) {
+            // If this mortgage could bring the fraction of mortgages underwritten over the Central Bank LTI soft limit
+            // to exceed the maximum fraction established by the Central Bank...
+            if (((double)(nFTBMortOverSoftMaxLTI_Prospec + nHMMortOverSoftMaxLTI_Prospec + nBTLMortOverSoftMaxLTI_Prospec + 1)
+                    / (nFTBMortgages_Prospec + nHMMortgages_Prospec + nBTLMortgages_Prospec + 1) > maxFracFTBProspecOverSoftMaxLTI)) {
                 // ... then use the minimum between the Central Bank soft limit and the private bank hard limit, for
-                // either first-time buyers or home movers
-                if (isFirstTimeBuyer) {
-                    return Math.min(firstTimeBuyerHardMaxLTI, centralBank.getFirstTimeBuyerSoftMaxLTI());
+                // either first-time buyers, home movers or buy-to-let investors
+                if (isHome) {
+                    if (isFirstTimeBuyer) {
+                        return Math.min(firstTimeBuyerHardMaxLTI, centralBank.getFirstTimeBuyerSoftMaxLTI());
+                    } else {
+                        return Math.min(homeMoverHardMaxLTI, centralBank.getHomeMoverSoftMaxLTI());
+                    }
                 } else {
-                    return Math.min(homeMoverHardMaxLTI, centralBank.getHomeMoverSoftMaxLTI());
+                    return Math.min(buyToLetHardMaxLTI, centralBank.getBuyToLetSoftMaxLTI());
                 }
             // ...otherwise...
             } else {
-                // ...simply use the private bank self-imposed hard maximum, for either first-time buyers or home movers
-                if (isFirstTimeBuyer) {
-                    return firstTimeBuyerHardMaxLTI;
+                // ...simply use the private bank self-imposed hard maximum, for either first-time buyers, home movers or buy-to-let investors
+                if (isHome) {
+                    if (isFirstTimeBuyer) {
+                        return firstTimeBuyerHardMaxLTI;
+                    } else {
+                        return homeMoverHardMaxLTI;
+                    }
                 } else {
-                    return homeMoverHardMaxLTI;
+                    return buyToLetHardMaxLTI;
                 }
             }
-        // Otherwise, FTBs and HMs keep separate quotas for mortgages over their respective LTI limits
+        // Otherwise, FTBs, HMs and BTLs keep separate quotas for mortgages over their respective LTI limits
         } else {
-            // For first-time buyers...
-            if (isFirstTimeBuyer) {
-                // ...if this mortgage could bring the fraction of mortgages underwritten over the Central Bank LTI soft
-                // limit to exceed the maximum fraction established by the Central Bank...
-                if (((double)(nFTBMortOverSoftMaxLTI_Prospec + 1) / (nFTBMortgages_Prospec + 1)
-                        > maxFracFTBProspecOverSoftMaxLTI)) {
-                    // ... then use the minimum between the Central Bank soft limit and the private bank hard limit
-                    return Math.min(firstTimeBuyerHardMaxLTI, centralBank.getFirstTimeBuyerSoftMaxLTI());
-                    // ...otherwise...
-                } else {
-                    // ...simply use the private bank self-imposed hard maximum
-                    return firstTimeBuyerHardMaxLTI;
-                }
+            if (isHome) {
+                // For first-time buyers...
+                if (isFirstTimeBuyer) {
+                    // ...if this mortgage could bring the fraction of mortgages underwritten over the Central Bank LTI soft
+                    // limit to exceed the maximum fraction established by the Central Bank...
+                    if (((double) (nFTBMortOverSoftMaxLTI_Prospec + 1) / (nFTBMortgages_Prospec + 1)
+                            > maxFracFTBProspecOverSoftMaxLTI)) {
+                        // ... then use the minimum between the Central Bank soft limit and the private bank hard limit
+                        return Math.min(firstTimeBuyerHardMaxLTI, centralBank.getFirstTimeBuyerSoftMaxLTI());
+                        // ...otherwise...
+                    } else {
+                        // ...simply use the private bank self-imposed hard maximum
+                        return firstTimeBuyerHardMaxLTI;
+                    }
                 // For home movers...
+                } else {
+                    // ...if this mortgage could bring the fraction of mortgages underwritten over the Central Bank LTI soft
+                    // limit to exceed the maximum fraction established by the Central Bank...
+                    if (((double) (nHMMortOverSoftMaxLTI_Prospec + 1) / (nHMMortgages_Prospec + 1)
+                            > maxFracHMProspecOverSoftMaxLTI)) {
+                        // ... then use the minimum between the Central Bank soft limit and the private bank hard limit
+                        return Math.min(homeMoverHardMaxLTI, centralBank.getHomeMoverSoftMaxLTI());
+                        // ...otherwise...
+                    } else {
+                        // ...simply use the private bank self-imposed hard maximum
+                        return homeMoverHardMaxLTI;
+                    }
+                }
+            // For buy-to-let investors...
             } else {
                 // ...if this mortgage could bring the fraction of mortgages underwritten over the Central Bank LTI soft
                 // limit to exceed the maximum fraction established by the Central Bank...
-                if (((double)(nHMMortOverSoftMaxLTI_Prospec + 1) / (nHMMortgages_Prospec + 1)
-                        > maxFracHMProspecOverSoftMaxLTI)) {
+                if (((double) (nBTLMortOverSoftMaxLTI_Prospec + 1) / (nBTLMortgages_Prospec + 1)
+                        > maxFracBTLProspecOverSoftMaxLTI)) {
                     // ... then use the minimum between the Central Bank soft limit and the private bank hard limit
-                    return Math.min(homeMoverHardMaxLTI, centralBank.getHomeMoverSoftMaxLTI());
+                    return Math.min(buyToLetHardMaxLTI, centralBank.getBuyToLetSoftMaxLTI());
                     // ...otherwise...
                 } else {
                     // ...simply use the private bank self-imposed hard maximum
-                    return homeMoverHardMaxLTI;
+                    return buyToLetHardMaxLTI;
                 }
             }
         }
@@ -667,24 +951,43 @@ public class Bank {
      * This method notifies the bank that the household is accepting the approval in principle letter offered and thus
      * sending a bid to the sales market. The purpose is for the bank to take this information into account for
      * computing the number of approval in principle letters (and thus potential mortgages) over the central bank soft
-     * LTI limit it has offered so far this month.
+     * limits that it has offered so far this month.
+     *
+     * @param isFirstTimeBuyer True if the household is a first-time buyer
+     * @param isHome True if the mortgage is to buy a home for the household (non-BTL mortgage)
      */
     void acceptApprovalInPrincipleLetter(double max_downpayment, double price, double annualGrossEmploymentIncome,
-                                         boolean isFTB) {
-        // Count the number of prospective new (non-BTL) mortgages over the soft LTI limit imposed by the Central
-        // Bank, differentiating between first-time buyers and home-movers
-        if (isFTB) {
-            ++Model.bank.nFTBMortgages_Prospec;
-            if (price > max_downpayment
-                    + annualGrossEmploymentIncome * Model.centralBank.getFirstTimeBuyerSoftMaxLTI()) {
-                ++Model.bank.nFTBMortOverSoftMaxLTI_Prospec;
+                                         boolean isFirstTimeBuyer, boolean isHome) {
+        // Count the number of prospective new mortgages over the soft limits imposed by the Central Bank,
+        // differentiating between first-time buyers, home-movers and buy-to-let investors
+        if (isHome) {
+            if (isFirstTimeBuyer) {
+                ++nFTBMortgages_Prospec;
+                if ((price - max_downpayment) / price > Model.centralBank.getFirstTimeBuyerSoftMaxLTV()) {
+                    ++nFTBMortOverSoftMaxLTV_Prospec;
+                }
+                if (price > max_downpayment
+                        + annualGrossEmploymentIncome * Model.centralBank.getFirstTimeBuyerSoftMaxLTI()) {
+                    ++nFTBMortOverSoftMaxLTI_Prospec;
+                }
+            } else {
+                ++nHMMortgages_Prospec;
+                if ((price - max_downpayment) / price > Model.centralBank.getHomeMoverSoftMaxLTV()) {
+                    ++nHMMortOverSoftMaxLTV_Prospec;
+                }
+                if (price > max_downpayment
+                        + annualGrossEmploymentIncome * Model.centralBank.getHomeMoverSoftMaxLTI()) {
+                    ++nHMMortOverSoftMaxLTI_Prospec;
+                }
             }
-        // ...and home movers
         } else {
-            ++Model.bank.nHMMortgages_Prospec;
+            ++nBTLMortgages_Prospec;
+            if ((price - max_downpayment) / price > Model.centralBank.getBuyToLetSoftMaxLTV()) {
+                ++nBTLMortOverSoftMaxLTV_Prospec;
+            }
             if (price > max_downpayment
-                    + annualGrossEmploymentIncome * Model.centralBank.getHomeMoverSoftMaxLTI()) {
-                ++Model.bank.nHMMortOverSoftMaxLTI_Prospec;
+                    + annualGrossEmploymentIncome * Model.centralBank.getBuyToLetSoftMaxLTI()) {
+                ++nBTLMortOverSoftMaxLTI_Prospec;
             }
         }
     }

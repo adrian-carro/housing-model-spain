@@ -50,14 +50,19 @@ public class Config {
     // Central Bank policy
     double CENTRAL_BANK_INITIAL_BASE_RATE;              // Central Bank initial base rate
     int CENTRAL_BANK_POLICY_APPLICATION_TIME;           // Time step from which any (potentially binding) Central Bank policy is applied
-    double CENTRAL_BANK_LTV_HARD_MAX_FTB;               // Mandatory Central Bank policy: Hard maximum LTV ratio for first-time buyers
-    double CENTRAL_BANK_LTV_HARD_MAX_HM;                // Mandatory Central Bank policy: Hard maximum LTV ratio for home movers
-    double CENTRAL_BANK_LTV_HARD_MAX_BTL;               // Mandatory Central Bank policy: Hard maximum LTV ratio for BTL investors
+    double CENTRAL_BANK_LTV_SOFT_MAX_FTB;               // Mandatory Central Bank policy: Soft maximum LTV ratio for first-time buyers
+    double CENTRAL_BANK_LTV_SOFT_MAX_HM;                // Mandatory Central Bank policy: Soft maximum LTV ratio for home movers
+    double CENTRAL_BANK_LTV_SOFT_MAX_BTL;               // Mandatory Central Bank policy: Soft maximum LTV ratio for BTL investors
+    double CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_FTB; // Mandatory Central Bank policy: Maximum fraction of FTB mortgages allowed to go over their LTV soft limit (double)
+    double CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_HM;  // Mandatory Central Bank policy: Maximum fraction of HM mortgages allowed to go over their LTV soft limit (double)
+    double CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_BTL; // Mandatory Central Bank policy: Maximum fraction of BTL mortgages allowed to go over their LTV soft limit (double)
     double CENTRAL_BANK_LTI_SOFT_MAX_FTB;               // Mandatory Central Bank policy: Soft maximum LTI ratio for first-time buyers
     double CENTRAL_BANK_LTI_SOFT_MAX_HM;                // Mandatory Central Bank policy: Soft maximum LTI ratio for home movers
+    double CENTRAL_BANK_LTI_SOFT_MAX_BTL;               // Mandatory Central Bank policy: Soft maximum LTI ratio for buy-to-let investors
     double CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_FTB; // Mandatory Central Bank policy: Maximum fraction of mortgages allowed to go over their LTI soft limit
     double CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_HM;  // Mandatory Central Bank policy: Maximum fraction of mortgages allowed to go over their LTI soft limit
-    int CENTRAL_BANK_LTI_MONTHS_TO_CHECK;               // Mandatory Central Bank policy: Months to check for moving average of fraction of mortgages over their LTI soft limit
+    double CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_BTL; // Mandatory Central Bank policy: Maximum fraction of mortgages allowed to go over their LTI soft limit
+    int CENTRAL_BANK_MONTHS_TO_CHECK_SOFT_LIMITS;       // Mandatory Central Bank policy: Months to check for moving averages of fractions of mortgages over their soft limits
     double CENTRAL_BANK_AFFORDABILITY_HARD_MAX;         // Mandatory Central Bank policy: Hard maximum fraction of household's income to be spent on mortgage repayments
     double CENTRAL_BANK_ICR_HARD_MIN;                   // Mandatory Central Bank policy: Hard minimum ratio between (expected) annual rental income and annual interest payments
 
@@ -160,6 +165,7 @@ public class Config {
     double BANK_LTV_FRAC_OVER_SOFT_MAX_BTL; // Internal private bank policy: Fraction of mortgages offered with LTV over the soft maximum ratio for BTL investors
     double BANK_LTI_HARD_MAX_FTB;           // Internal private bank policy: Hard maximum LTI ratio for first-time-buyers
     double BANK_LTI_HARD_MAX_HM;            // Internal private bank policy: Hard maximum LTI ratio for home movers
+    double BANK_LTI_HARD_MAX_BTL;           // Internal private bank policy: Hard maximum LTI ratio for buy-to-let investors
     double BANK_AFFORDABILITY_HARD_MAX;     // Internal private bank policy: Hard maximum fraction of household's income to be spent on mortgage repayments
     double BANK_ICR_HARD_MIN;               // Internal private bank policy: Hard minimum ratio between (expected) annual rental income and annual interest payments
 
@@ -366,7 +372,7 @@ public class Config {
         derivedParams.SMOOTHING_FACTOR = 1.0 - Math.pow(CUMULATIVE_WEIGHT_BEYOND_YEAR, 1.0 / constants.MONTHS_IN_YEAR);
         derivedParams.HOUSE_PRICES_MEAN = Math.exp(HOUSE_PRICES_SCALE + HOUSE_PRICES_SHAPE*HOUSE_PRICES_SHAPE/2.0); // Mean of a log-normal distribution
         // Household behaviour parameters: general
-        derivedParams.MONTHLY_P_SELL = 1.0/(HOLD_PERIOD*constants.MONTHS_IN_YEAR);
+        derivedParams.MONTHLY_P_SELL = 1.0 / (HOLD_PERIOD*constants.MONTHS_IN_YEAR);
         // Household behaviour parameters: rent
         derivedParams.TENANCY_LENGTH_AVERAGE = (TENANCY_LENGTH_MIN + TENANCY_LENGTH_MAX) / 2.0;
         // Bank parameters

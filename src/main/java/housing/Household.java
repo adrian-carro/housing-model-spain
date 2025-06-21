@@ -147,7 +147,7 @@ public class Household implements IHouseOwner {
             }            
         } else if (behaviour.isPropertyInvestor()) { // Only BTL investors who already own a home enter here
             // Before any maximum mortgage price calculation, update the persistent LTV & LTI limits for this household
-            persistentLTILimit = Model.bank.getLoanToIncomeLimit(false);
+            persistentLTILimit = Model.bank.getLoanToIncomeLimit(false, false);
             persistentLTVLimit = Model.bank.getLoanToValueLimit(false, false);
             // BTL investors always bid the price corresponding to the maximum mortgage they could get
             double price = Model.bank.getMaxMortgagePrice(this, false);
@@ -155,6 +155,8 @@ public class Household implements IHouseOwner {
             if (behaviour.decideToBuyInvestmentProperty(this)) {
                 double desiredDownPayment = behaviour.decideDownPayment(this, price, false);
                 Model.houseSaleMarket.bid(this, price, true, desiredDownPayment);
+                Model.bank.acceptApprovalInPrincipleLetter(getBankBalance(), price, getAnnualGrossEmploymentIncome(),
+                        false, false);
             }
         } else if (!isHomeowner()){
             System.out.println("Strange: this household is not a type I recognize");
@@ -402,7 +404,7 @@ public class Household implements IHouseOwner {
      ********************************************************/
     private void bidForAHome() {
         // Before any maximum mortgage price calculation, update the persistent LTI and LTV limits for this household
-        persistentLTILimit = Model.bank.getLoanToIncomeLimit(isFirstTimeBuyer());
+        persistentLTILimit = Model.bank.getLoanToIncomeLimit(isFirstTimeBuyer(), true);
         persistentLTVLimit = Model.bank.getLoanToValueLimit(isFirstTimeBuyer(), true);
         // Find household's desired housing expenditure, capped to the maximum mortgage available to the household
         double price = Math.min(getDesiredPurchasePrice(), Model.bank.getMaxMortgagePrice(this, true));
@@ -416,7 +418,7 @@ public class Household implements IHouseOwner {
             // ...and notify the bank about accepting the approval in principle letter offered, for it to count it
             // towards the relevant soft LTI limit
             Model.bank.acceptApprovalInPrincipleLetter(getBankBalance(), price, getAnnualGrossEmploymentIncome(),
-                    isFirstTimeBuyer());
+                    isFirstTimeBuyer(), true);
         } else {
             // ... if renting, bid in the house rental market for the desired rent price
             Model.houseRentalMarket.bid(this, behaviour.getDesiredRentPrice(monthlyGrossEmploymentIncome),
