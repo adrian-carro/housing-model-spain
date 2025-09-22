@@ -148,7 +148,7 @@ public class Household implements IHouseOwner {
         } else if (behaviour.isPropertyInvestor()) { // Only BTL investors who already own a home enter here
             // Before any maximum mortgage price calculation, update the persistent LTV & LTI limits for this household
             persistentLTILimit = Model.bank.getLoanToIncomeLimit(false, false);
-            persistentLTVLimit = Model.bank.getLoanToValueLimit(false, false);
+            persistentLTVLimit = Model.bank.getLoanToValueLimit(false, false, age);
             // BTL investors always bid the price corresponding to the maximum mortgage they could get
             double price = Model.bank.getMaxMortgagePrice(this, false);
             Model.householdStats.countBTLBidsAboveExpAvSalePrice(price);
@@ -405,7 +405,7 @@ public class Household implements IHouseOwner {
     private void bidForAHome() {
         // Before any maximum mortgage price calculation, update the persistent LTI and LTV limits for this household
         persistentLTILimit = Model.bank.getLoanToIncomeLimit(isFirstTimeBuyer(), true);
-        persistentLTVLimit = Model.bank.getLoanToValueLimit(isFirstTimeBuyer(), true);
+        persistentLTVLimit = Model.bank.getLoanToValueLimit(isFirstTimeBuyer(), true, age);
         // Find household's desired housing expenditure, capped to the maximum mortgage available to the household
         double price = Math.min(getDesiredPurchasePrice(), Model.bank.getMaxMortgagePrice(this, true));
         // Record the bid on householdStats for counting the number of bids above exponential moving average sale price

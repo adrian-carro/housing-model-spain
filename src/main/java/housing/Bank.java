@@ -657,7 +657,7 @@ public class Bank {
 
     //----- Mortgage policy methods -----//
 
-    double getLoanToValueLimit(boolean isFirstTimeBuyer, boolean isHome) {
+    double getLoanToValueLimit(boolean isFirstTimeBuyer, boolean isHome, double age) {
 
         // First, the private bank assigns an internal LTV limit according to its internal policy
         double internalLTV;
@@ -701,6 +701,12 @@ public class Bank {
             if (internalLTV <= centralBank.getBuyToLetSoftMaxLTV()) {
                 return internalLTV;
             }
+        }
+
+        // If the age of the household is below the application age for LTV policies, then simply return the internally
+        // assigned limit
+        if (age < centralBank.getApplicationAgeLTV()) {
+            return internalLTV;
         }
 
         // Otherwise, if the internally assigned limit is above the soft limit set by the Central Bank, assess whether

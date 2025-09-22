@@ -31,6 +31,7 @@ public class CentralBank {
     private double      homeMoverMaxFracOverSoftMaxLTV;         // Maximum fraction of first-time buyer mortgages allowed to exceed their LTV soft maximum
     private double      buyToLetSoftMaxLTV;                     // Loan-To-Value soft maximum for buy-to-let mortgages
     private double      buyToLetMaxFracOverSoftMaxLTV;          // Maximum fraction of first-time buyer mortgages allowed to exceed their LTV soft maximum
+    private double      applicationAgeLTV;                      // Age from which any LTV policy starts applying (double)
 
     // LTI policy thresholds
     private double      firstTimeBuyerSoftMaxLTI;               // Loan-To-Income soft maximum for first-time buyer mortgages
@@ -60,6 +61,7 @@ public class CentralBank {
         homeMoverMaxFracOverSoftMaxLTV = config.CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_HM;
         buyToLetSoftMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
         buyToLetMaxFracOverSoftMaxLTV = config.CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_BTL;
+        applicationAgeLTV = config.CENTRAL_BANK_LTV_APPLICATION_AGE;
         // Set initial LTI mandatory policy thresholds
         firstTimeBuyerSoftMaxLTI = 15.0; // TODO: Set these as non-binding initial parameters in config file
         firstTimeBuyerMaxFracOverSoftMaxLTI = config.CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_FTB;
@@ -123,6 +125,8 @@ public class CentralBank {
     double getHomeMoverMaxFracOverSoftMaxLTV() { return homeMoverMaxFracOverSoftMaxLTV; }
 
     double getBuyToLetMaxFracOverSoftMaxLTV() { return buyToLetMaxFracOverSoftMaxLTV; }
+
+    double getApplicationAgeLTV() { return applicationAgeLTV; }
 
     double getFirstTimeBuyerSoftMaxLTI() { return firstTimeBuyerSoftMaxLTI; }
 

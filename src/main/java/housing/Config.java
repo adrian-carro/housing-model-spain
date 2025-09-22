@@ -56,6 +56,7 @@ public class Config {
     double CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_FTB; // Mandatory Central Bank policy: Maximum fraction of FTB mortgages allowed to go over their LTV soft limit (double)
     double CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_HM;  // Mandatory Central Bank policy: Maximum fraction of HM mortgages allowed to go over their LTV soft limit (double)
     double CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_BTL; // Mandatory Central Bank policy: Maximum fraction of BTL mortgages allowed to go over their LTV soft limit (double)
+    double CENTRAL_BANK_LTV_APPLICATION_AGE;            // Mandatory Central Bank policy: Age from which any LTV policy starts applying (double)
     double CENTRAL_BANK_LTI_SOFT_MAX_FTB;               // Mandatory Central Bank policy: Soft maximum LTI ratio for first-time buyers
     double CENTRAL_BANK_LTI_SOFT_MAX_HM;                // Mandatory Central Bank policy: Soft maximum LTI ratio for home movers
     double CENTRAL_BANK_LTI_SOFT_MAX_BTL;               // Mandatory Central Bank policy: Soft maximum LTI ratio for buy-to-let investors
