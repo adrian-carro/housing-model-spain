@@ -91,6 +91,8 @@ public class Household implements IHouseOwner {
         // Update desired purchase price
         desiredPurchasePrice = behaviour.updateDesiredPurchasePrice(annualGrossEmploymentIncome);
         // desiredPurchasePrice = behaviour.getAltDesiredPurchasePrice(annualGrossEmploymentIncome, behaviour.decideLTV(this));
+        // Before any payment is actually made, compute and record this month expected housing expenses
+        recordHousingConsumption();
         // Add monthly disposable income (gross total income - essential consumption & housing expenses) to bank balance
         double monthlyDisposableIncome = getMonthlyDisposableIncome();
         bankBalance += monthlyDisposableIncome;
@@ -101,6 +103,8 @@ public class Household implements IHouseOwner {
         desiredConsumption = Math.min(desiredConsumption,
                 getAnnualGrossTotalIncome()*config.MAXIMUM_CONSUMPTION_FRACTION);
         bankBalance -= desiredConsumption;
+        // Add total non-housing consumption to general counter
+        Model.householdStats.addNonHousingConsumption(desiredConsumption + config.ESSENTIAL_NOMINAL_CONSUMPTION);
         // Compute saving rate
         savingRate = (monthlyDisposableIncome - desiredConsumption)/getMonthlyGrossTotalIncome();
         // Deal with bankruptcies
@@ -160,6 +164,27 @@ public class Household implements IHouseOwner {
             }
         } else if (!isHomeowner()){
             System.out.println("Strange: this household is not a type I recognize");
+        }
+    }
+
+    /**
+     * Compute and record (send to householdStats) this month expected housing expenses, dividing, for mortgage holders,
+     * between principal repayment and interest payment expenses. Note that this should be called before any payment is
+     * actually made
+     */
+    private void recordHousingConsumption() {
+        for (Map.Entry<House, PaymentAgreement> entry : getHousePayments().entrySet()) {
+            House house = entry.getKey();
+            PaymentAgreement payment = entry.getValue();
+            if (payment instanceof RentalAgreement) {
+                Model.householdStats.addRentalHousingConsumption(payment.nextPayment());
+            } else if (house.owner == this && payment.nextPayment() > 0.0) {
+                double monthlyInterestExpense =
+                        ((MortgageAgreement) payment).principal * ((MortgageAgreement) payment).monthlyInterestRate;
+                Model.householdStats.addInterestPaymentHousingConsumption(monthlyInterestExpense);
+                Model.householdStats.addPrincipalRepaymentHousingConsumption(
+                        payment.nextPayment() - monthlyInterestExpense);
+            }
         }
     }
 

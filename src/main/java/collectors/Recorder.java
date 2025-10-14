@@ -116,7 +116,10 @@ public class Recorder {
                     // Credit data
                     + "nStockMortgages; nNewFTBMortgages; nNewFTBMortgagesToBTL; nNewHMMortgages; "
                     + "nNewBTLMortgages; newFTBCredit; newHMCredit; newBTLCredit; newTotalCredit; creditStock; "
-                    + "interestRate");
+                    + "interestRate; "
+                    // Consumption data
+                    + "nonHousingConsumption; rentalConsumption; principalRepaymentConsumption; "
+                    + "interestPaymentConsumption");
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -179,7 +182,7 @@ public class Recorder {
                         "%d; %d; %.4f; " +
                         "%.4f; %.4e; %.2f; %.2f; %.2f; %.4f; %d; %d; %d; %d; %d; %d; %d; %d; %d; %d; " +
                         "%.4f; %.4e; %.2f; %.2f; %.2f; %.4f; %d; %d; %d; %.4f; " +
-                        "%d; %d; %d; %d; %d; %.2f; %.2f; %.2f; %.2f; %.2f; %.6f", time,
+                        "%d; %d; %d; %d; %d; %.2f; %.2f; %.2f; %.2f; %.2f; %.6f; %.2f; %.2f; %.2f; %.2f", time,
                 // Number of households of each type
                 Model.householdStats.getnNonBTLHomeless(),
                 Model.householdStats.getnBTLHomeless(),
@@ -237,7 +240,12 @@ public class Recorder {
                 Model.creditSupply.getNewCreditToBTL(),
                 Model.creditSupply.getNewCreditTotal(),
                 (Model.creditSupply.getTotalBTLCredit() + Model.creditSupply.getTotalOOCredit()),
-                Model.creditSupply.getInterestRate());
+                Model.creditSupply.getInterestRate(),
+                // Consumption data
+                Model.householdStats.getNonHousingConsumption(),
+                Model.householdStats.getRentalHousingConsumption(),
+                Model.householdStats.getPrincipalRepaymentHousingConsumption(),
+                Model.householdStats.getInterestPaymentHousingConsumption());
 
         // Write quality band prices to file
         if (recordQualityBandPrice) {

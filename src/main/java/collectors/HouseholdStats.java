@@ -36,12 +36,24 @@ public class HouseholdStats {
     private double  rentingAnnualisedGrossTotalIncome;
     private double  homelessAnnualisedGrossTotalIncome;
 
-    // Other fields
-    private double  sumStockYield; // Sum of stock gross rental yields of all currently occupied rental properties
+    // Fields for counting bids above exponential average sale prices for both BTL and non-BTL households
     private int     nNonBTLBidsAboveExpAvSalePrice; // Number of normal (non-BTL) bids with desired housing expenditure above the exponential moving average sale price
     private int     nBTLBidsAboveExpAvSalePrice; // Number of BTL bids with desired housing expenditure above the exponential moving average sale price
-    private int     nNonBTLBidsAboveExpAvSalePriceCounter; // Counter for the number of normal (non-BTL) bids with desired housing expenditure above the exp. mov. av. sale price
     private int     nBTLBidsAboveExpAvSalePriceCounter; // Counter for the number of BTL bids with desired housing expenditure above the exp. mov. av. sale price
+    private int     nNonBTLBidsAboveExpAvSalePriceCounter; // Counter for the number of normal (non-BTL) bids with desired housing expenditure above the exp. mov. av. sale price
+
+    // Fields for summing both housing and non-housing consumption
+    private double  nonHousingConsumption;
+    private double  rentalHousingConsumption;
+    private double  principalRepaymentHousingConsumption;
+    private double  interestPaymentHousingConsumption;
+    private double  nonHousingConsumptionCounter;
+    private double  rentalHousingConsumptionCounter;
+    private double  principalRepaymentHousingConsumptionCounter;
+    private double  interestPaymentHousingConsumptionCounter;
+
+    // Other fields
+    private double  sumStockYield; // Sum of stock gross rental yields of all currently occupied rental properties
 
     //-------------------//
     //----- Methods -----//
@@ -51,8 +63,18 @@ public class HouseholdStats {
      * Set initial values for variables for which a controlled first measure per run is needed
      */
     public void init() {
+        nNonBTLBidsAboveExpAvSalePrice = 0;
+        nBTLBidsAboveExpAvSalePrice = 0;
         nNonBTLBidsAboveExpAvSalePriceCounter = 0;
         nBTLBidsAboveExpAvSalePriceCounter = 0;
+        nonHousingConsumption = 0.0;
+        rentalHousingConsumption = 0.0;
+        principalRepaymentHousingConsumption = 0.0;
+        interestPaymentHousingConsumption = 0.0;
+        nonHousingConsumptionCounter = 0.0;
+        rentalHousingConsumptionCounter = 0.0;
+        principalRepaymentHousingConsumptionCounter = 0.0;
+        interestPaymentHousingConsumptionCounter = 0.0;
     }
 
     public void record() {
@@ -162,6 +184,15 @@ public class HouseholdStats {
         nBTLBidsAboveExpAvSalePrice = nBTLBidsAboveExpAvSalePriceCounter;
         nNonBTLBidsAboveExpAvSalePriceCounter = 0;
         nBTLBidsAboveExpAvSalePriceCounter = 0;
+        // Pass consumption components to persistent variables and re-initialise to zero the counters
+        nonHousingConsumption = nonHousingConsumptionCounter;
+        rentalHousingConsumption = rentalHousingConsumptionCounter;
+        principalRepaymentHousingConsumption = principalRepaymentHousingConsumptionCounter;
+        interestPaymentHousingConsumption = interestPaymentHousingConsumptionCounter;
+        nonHousingConsumptionCounter = 0.0;
+        rentalHousingConsumptionCounter = 0.0;
+        principalRepaymentHousingConsumptionCounter = 0.0;
+        interestPaymentHousingConsumptionCounter = 0.0;
     }
 
     /**
@@ -182,6 +213,34 @@ public class HouseholdStats {
         if (price >= Model.housingMarketStats.getExpAvSalePriceForQuality(0)) {
             nBTLBidsAboveExpAvSalePriceCounter++;
         }
+    }
+
+    /**
+     * Add to total non-housing consumption by the household sector
+     */
+    public void addNonHousingConsumption(double amount) {
+        nonHousingConsumptionCounter += amount;
+    }
+
+    /**
+     * Add to total housing consumption for principal repayment by the household sector
+     */
+    public void addRentalHousingConsumption(double amount) {
+        rentalHousingConsumptionCounter += amount;
+    }
+
+    /**
+     * Add to total housing consumption for principal repayment by the household sector
+     */
+    public void addPrincipalRepaymentHousingConsumption(double amount) {
+        principalRepaymentHousingConsumptionCounter += amount;
+    }
+
+    /**
+     * Add to total housing consumption for interest payments by the household sector
+     */
+    public void addInterestPaymentHousingConsumption(double amount) {
+        interestPaymentHousingConsumptionCounter += amount;
     }
 
     //----- Getter/setter methods -----//
@@ -230,5 +289,13 @@ public class HouseholdStats {
     int getnNonBTLBidsAboveExpAvSalePrice() { return nNonBTLBidsAboveExpAvSalePrice; }
     // ... number of BTL bidders with desired housing expenditure above the exponential moving average sale price
     int getnBTLBidsAboveExpAvSalePrice() { return nBTLBidsAboveExpAvSalePrice; }
+    // ... total non-housing consumption by the household sector
+    double getNonHousingConsumption() { return nonHousingConsumption; }
+    // ... total housing consumption for rental payments by the household sector
+    double getRentalHousingConsumption() { return rentalHousingConsumption; }
+    // ... total housing consumption for principal repayment by the household sector
+    double getPrincipalRepaymentHousingConsumption() { return principalRepaymentHousingConsumption; }
+    // ... total housing consumption for interest payments by the household sector
+    double getInterestPaymentHousingConsumption() { return interestPaymentHousingConsumption; }
 
 }
