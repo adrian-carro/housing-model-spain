@@ -118,8 +118,8 @@ public class Recorder {
                     + "nNewBTLMortgages; newFTBCredit; newHMCredit; newBTLCredit; newTotalCredit; creditStock; "
                     + "interestRate; "
                     // Consumption data
-                    + "nonHousingConsumption; rentalConsumption; principalRepaymentConsumption; "
-                    + "interestPaymentConsumption");
+                    + "nonHousingConsumption; rentalConsumption; downpaymentConsumption; "
+                    + "principalRepaymentConsumption; interestPaymentConsumption");
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -182,7 +182,7 @@ public class Recorder {
                         "%d; %d; %.4f; " +
                         "%.4f; %.4e; %.2f; %.2f; %.2f; %.4f; %d; %d; %d; %d; %d; %d; %d; %d; %d; %d; " +
                         "%.4f; %.4e; %.2f; %.2f; %.2f; %.4f; %d; %d; %d; %.4f; " +
-                        "%d; %d; %d; %d; %d; %.2f; %.2f; %.2f; %.2f; %.2f; %.6f; %.2f; %.2f; %.2f; %.2f", time,
+                        "%d; %d; %d; %d; %d; %.2f; %.2f; %.2f; %.2f; %.2f; %.6f; %.2f; %.2f; %.2f; %.2f; %.2f", time,
                 // Number of households of each type
                 Model.householdStats.getnNonBTLHomeless(),
                 Model.householdStats.getnBTLHomeless(),
@@ -244,6 +244,7 @@ public class Recorder {
                 // Consumption data
                 Model.householdStats.getNonHousingConsumption(),
                 Model.householdStats.getRentalHousingConsumption(),
+                Model.householdStats.getDownpaymentHousingConsumption(),
                 Model.householdStats.getPrincipalRepaymentHousingConsumption(),
                 Model.householdStats.getInterestPaymentHousingConsumption());
 

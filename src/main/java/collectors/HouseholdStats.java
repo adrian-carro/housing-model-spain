@@ -45,10 +45,12 @@ public class HouseholdStats {
     // Fields for summing both housing and non-housing consumption
     private double  nonHousingConsumption;
     private double  rentalHousingConsumption;
+    private double  downpaymentHousingConsumption;
     private double  principalRepaymentHousingConsumption;
     private double  interestPaymentHousingConsumption;
     private double  nonHousingConsumptionCounter;
     private double  rentalHousingConsumptionCounter;
+    private double  downpaymentHousingConsumptionCounter;
     private double  principalRepaymentHousingConsumptionCounter;
     private double  interestPaymentHousingConsumptionCounter;
 
@@ -69,10 +71,12 @@ public class HouseholdStats {
         nBTLBidsAboveExpAvSalePriceCounter = 0;
         nonHousingConsumption = 0.0;
         rentalHousingConsumption = 0.0;
+        downpaymentHousingConsumption = 0.0;
         principalRepaymentHousingConsumption = 0.0;
         interestPaymentHousingConsumption = 0.0;
         nonHousingConsumptionCounter = 0.0;
         rentalHousingConsumptionCounter = 0.0;
+        downpaymentHousingConsumptionCounter = 0.0;
         principalRepaymentHousingConsumptionCounter = 0.0;
         interestPaymentHousingConsumptionCounter = 0.0;
     }
@@ -187,10 +191,12 @@ public class HouseholdStats {
         // Pass consumption components to persistent variables and re-initialise to zero the counters
         nonHousingConsumption = nonHousingConsumptionCounter;
         rentalHousingConsumption = rentalHousingConsumptionCounter;
+        downpaymentHousingConsumption = downpaymentHousingConsumptionCounter;
         principalRepaymentHousingConsumption = principalRepaymentHousingConsumptionCounter;
         interestPaymentHousingConsumption = interestPaymentHousingConsumptionCounter;
         nonHousingConsumptionCounter = 0.0;
         rentalHousingConsumptionCounter = 0.0;
+        downpaymentHousingConsumptionCounter = 0.0;
         principalRepaymentHousingConsumptionCounter = 0.0;
         interestPaymentHousingConsumptionCounter = 0.0;
     }
@@ -227,6 +233,13 @@ public class HouseholdStats {
      */
     public void addRentalHousingConsumption(double amount) {
         rentalHousingConsumptionCounter += amount;
+    }
+
+    /**
+     * Add to total housing consumption for down-payments by the household sector
+     */
+    public void addDownpaymentHousingConsumption(double amount) {
+        downpaymentHousingConsumptionCounter += amount;
     }
 
     /**
@@ -293,6 +306,8 @@ public class HouseholdStats {
     double getNonHousingConsumption() { return nonHousingConsumption; }
     // ... total housing consumption for rental payments by the household sector
     double getRentalHousingConsumption() { return rentalHousingConsumption; }
+    // ... total housing consumption for principal repayment by the household sector
+    double getDownpaymentHousingConsumption() { return downpaymentHousingConsumption; }
     // ... total housing consumption for principal repayment by the household sector
     double getPrincipalRepaymentHousingConsumption() { return principalRepaymentHousingConsumption; }
     // ... total housing consumption for interest payments by the household sector

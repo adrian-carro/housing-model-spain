@@ -307,6 +307,7 @@ public class Household implements IHouseOwner {
         MortgageAgreement mortgage = Model.bank.requestLoan(this, sale.getPrice(),
                 desiredDownPayment, home == null);
         bankBalance -= mortgage.downPayment;
+        Model.householdStats.addDownpaymentHousingConsumption(mortgage.downPayment);
         housePayments.put(sale.getHouse(), mortgage);
         if (home == null) { // move in to house
             home = sale.getHouse();
