@@ -54,6 +54,10 @@ public class HouseholdStats {
     private double  principalRepaymentHousingConsumptionCounter;
     private double  interestPaymentHousingConsumptionCounter;
 
+    // Fields for summing both financial and housing wealth
+    private double totalFinancialWealth;
+    private double totalHousingWealth;
+
     // Other fields
     private double  sumStockYield; // Sum of stock gross rental yields of all currently occupied rental properties
 
@@ -79,6 +83,8 @@ public class HouseholdStats {
         downpaymentHousingConsumptionCounter = 0.0;
         principalRepaymentHousingConsumptionCounter = 0.0;
         interestPaymentHousingConsumptionCounter = 0.0;
+        totalFinancialWealth = 0.0;
+        totalHousingWealth = 0.0;
     }
 
     public void record() {
@@ -97,6 +103,8 @@ public class HouseholdStats {
         rentingAnnualisedGrossTotalIncome = 0.0;
         homelessAnnualisedGrossTotalIncome = 0.0;
         sumStockYield = 0.0;
+        totalFinancialWealth = 0.0;
+        totalHousingWealth = 0.0;
         // Time stamp householdStats microDataRecorders
         Model.microDataRecorder.timeStampSingleRunSingleVariableFiles(Model.getTime(), config.recordHouseholdID,
                 config.recordEmploymentIncome, config.recordRentalIncome, config.recordBankBalance,
@@ -140,7 +148,21 @@ public class HouseholdStats {
                     homelessAnnualisedGrossTotalIncome += h.getMonthlyGrossTotalIncome();
                 }
             }
-            // Record household micro-data
+            // Compude this household's housing wealth as mark-to-market net housing wealth, thus looking at current
+            // average prices for houses of the same quality and subtracting any remaining principal
+            double housingWealth = 0.0;
+            for (Map.Entry<House, PaymentAgreement> entry : h.getHousePayments().entrySet()) {
+                House house = entry.getKey();
+                PaymentAgreement payment = entry.getValue();
+                if (payment instanceof MortgageAgreement && house.owner == h) {
+                    housingWealth += Model.housingMarketStats.getExpAvSalePriceForQuality(house.getQuality())
+                            - ((MortgageAgreement) payment).principal;
+                }
+            }
+            // Add this household's contribution to total financial and housing wealth
+            totalFinancialWealth += h.getBankBalance();
+            totalHousingWealth += housingWealth;
+            // Record household microdata
             if (config.recordHouseholdID) {
                 Model.microDataRecorder.recordHouseholdID(Model.getTime(), h.id);
             }
@@ -154,17 +176,6 @@ public class HouseholdStats {
                 Model.microDataRecorder.recordBankBalance(Model.getTime(), h.getBankBalance());
             }
             if (config.recordHousingWealth) {
-                // Housing wealth is computed as mark-to-market net housing wealth, thus looking at current average
-                // prices for houses of the same quality
-                double housingWealth = 0.0;
-                for (Map.Entry<House, PaymentAgreement> entry : h.getHousePayments().entrySet()) {
-                    House house = entry.getKey();
-                    PaymentAgreement payment = entry.getValue();
-                    if (payment instanceof MortgageAgreement && house.owner == h) {
-                        housingWealth += Model.housingMarketStats.getExpAvSalePriceForQuality(house.getQuality())
-                                - ((MortgageAgreement) payment).principal;
-                    }
-                }
                 Model.microDataRecorder.recordHousingWealth(Model.getTime(), housingWealth);
             }
             if (config.recordNHousesOwned) {
@@ -286,6 +297,10 @@ public class HouseholdStats {
             return 0.0;
         }
     }
+
+    // Getters for wealth variables
+    double getTotalFinancialWealth() { return totalFinancialWealth; }
+    double getTotalHousingWealth() { return totalHousingWealth; }
 
     // Getters for other variables...
     // ... number of empty houses (total number of houses minus number of non-homeless households)
