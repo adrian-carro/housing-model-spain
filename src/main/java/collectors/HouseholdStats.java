@@ -56,7 +56,8 @@ public class HouseholdStats {
 
     // Fields for summing both financial and housing wealth
     private double totalFinancialWealth;
-    private double totalHousingWealth;
+    private double totalHousingNetWealth;
+    private double totalHousingGrossWealth;
 
     // Other fields
     private double  sumStockYield; // Sum of stock gross rental yields of all currently occupied rental properties
@@ -84,7 +85,8 @@ public class HouseholdStats {
         principalRepaymentHousingConsumptionCounter = 0.0;
         interestPaymentHousingConsumptionCounter = 0.0;
         totalFinancialWealth = 0.0;
-        totalHousingWealth = 0.0;
+        totalHousingNetWealth = 0.0;
+        totalHousingGrossWealth = 0.0;
     }
 
     public void record() {
@@ -104,11 +106,12 @@ public class HouseholdStats {
         homelessAnnualisedGrossTotalIncome = 0.0;
         sumStockYield = 0.0;
         totalFinancialWealth = 0.0;
-        totalHousingWealth = 0.0;
+        totalHousingNetWealth = 0.0;
+        totalHousingGrossWealth = 0.0;
         // Time stamp householdStats microDataRecorders
         Model.microDataRecorder.timeStampSingleRunSingleVariableFiles(Model.getTime(), config.recordHouseholdID,
                 config.recordEmploymentIncome, config.recordRentalIncome, config.recordBankBalance,
-                config.recordHousingWealth, config.recordNHousesOwned, config.recordAge, config.recordSavingRate);
+                config.recordHousingNetWealth, config.recordNHousesOwned, config.recordAge, config.recordSavingRate);
         // Run through all households counting population in each type and summing their gross incomes
         for (Household h : Model.households) {
             if (h.behaviour.isPropertyInvestor()) {
@@ -150,18 +153,21 @@ public class HouseholdStats {
             }
             // Compude this household's housing wealth as mark-to-market net housing wealth, thus looking at current
             // average prices for houses of the same quality and subtracting any remaining principal
-            double housingWealth = 0.0;
+            double housingNetWealth = 0.0;
+            double housingGrossWealth = 0.0;
             for (Map.Entry<House, PaymentAgreement> entry : h.getHousePayments().entrySet()) {
                 House house = entry.getKey();
                 PaymentAgreement payment = entry.getValue();
                 if (payment instanceof MortgageAgreement && house.owner == h) {
-                    housingWealth += Model.housingMarketStats.getExpAvSalePriceForQuality(house.getQuality())
+                    housingNetWealth += Model.housingMarketStats.getExpAvSalePriceForQuality(house.getQuality())
                             - ((MortgageAgreement) payment).principal;
+                    housingGrossWealth += Model.housingMarketStats.getExpAvSalePriceForQuality(house.getQuality());
                 }
             }
             // Add this household's contribution to total financial and housing wealth
             totalFinancialWealth += h.getBankBalance();
-            totalHousingWealth += housingWealth;
+            totalHousingNetWealth += housingNetWealth;
+            totalHousingGrossWealth += housingGrossWealth;
             // Record household microdata
             if (config.recordHouseholdID) {
                 Model.microDataRecorder.recordHouseholdID(Model.getTime(), h.id);
@@ -175,8 +181,8 @@ public class HouseholdStats {
             if (config.recordBankBalance) {
                 Model.microDataRecorder.recordBankBalance(Model.getTime(), h.getBankBalance());
             }
-            if (config.recordHousingWealth) {
-                Model.microDataRecorder.recordHousingWealth(Model.getTime(), housingWealth);
+            if (config.recordHousingNetWealth) {
+                Model.microDataRecorder.recordHousingNetWealth(Model.getTime(), housingNetWealth);
             }
             if (config.recordNHousesOwned) {
                 Model.microDataRecorder.recordNHousesOwned(Model.getTime(), h.getNProperties());
@@ -300,7 +306,8 @@ public class HouseholdStats {
 
     // Getters for wealth variables
     double getTotalFinancialWealth() { return totalFinancialWealth; }
-    double getTotalHousingWealth() { return totalHousingWealth; }
+    double getTotalHousingNetWealth() { return totalHousingNetWealth; }
+    double getTotalHousingGrossWealth() { return totalHousingGrossWealth; }
 
     // Getters for other variables...
     // ... number of empty houses (total number of houses minus number of non-homeless households)

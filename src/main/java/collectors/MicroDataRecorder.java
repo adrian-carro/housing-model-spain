@@ -18,7 +18,7 @@ public class MicroDataRecorder {
     private PrintWriter     outfileEmploymentIncome;
     private PrintWriter     outfileRentalIncome;
     private PrintWriter     outfileBankBalance;
-    private PrintWriter     outfileHousingWealth;
+    private PrintWriter     outfileHousingNetWealth;
     private PrintWriter     outfileNHousesOwned;
     private PrintWriter     outfileAge;
     private PrintWriter     outfileSavingRate;
@@ -38,7 +38,7 @@ public class MicroDataRecorder {
 
     public void openSingleRunSingleVariableFiles(int nRun, boolean recordHouseholdID, boolean recordEmploymentIncome,
                                                  boolean recordRentalIncome, boolean recordBankBalance,
-                                                 boolean recordHousingWealth, boolean recordNHousesOwned,
+                                                 boolean recordHousingNetWealth, boolean recordNHousesOwned,
                                                  boolean recordAge, boolean recordSavingRate) {
         if (recordHouseholdID) {
             try {
@@ -72,9 +72,9 @@ public class MicroDataRecorder {
                 e.printStackTrace();
             }
         }
-        if (recordHousingWealth) {
+        if (recordHousingNetWealth) {
             try {
-                outfileHousingWealth = new PrintWriter(outputFolder + "HousingWealth-run" + nRun
+                outfileHousingNetWealth = new PrintWriter(outputFolder + "HousingNetWealth-run" + nRun
                         + ".csv", "UTF-8");
             } catch (FileNotFoundException | UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -108,7 +108,7 @@ public class MicroDataRecorder {
 
     void timeStampSingleRunSingleVariableFiles(int time, boolean recordHouseholdID, boolean recordEmploymentIncome,
                                                boolean recordRentalIncome, boolean recordBankBalance,
-                                               boolean recordHousingWealth, boolean recordNHousesOwned,
+                                               boolean recordHousingNetWealth, boolean recordNHousesOwned,
                                                boolean recordAge, boolean recordSavingRate) {
         if (time % freqOfMicroPrinting == 0 && time >= timeToStartMicroPrinting) {
             if (recordHouseholdID) {
@@ -135,11 +135,11 @@ public class MicroDataRecorder {
                 }
                 outfileBankBalance.print(time);
             }
-            if (recordHousingWealth) {
+            if (recordHousingNetWealth) {
                 if (time != timeToStartMicroPrinting) {
-                    outfileHousingWealth.println("");
+                    outfileHousingNetWealth.println("");
                 }
-                outfileHousingWealth.print(time);
+                outfileHousingNetWealth.print(time);
             }
             if (recordNHousesOwned) {
                 if (time != timeToStartMicroPrinting) {
@@ -186,9 +186,9 @@ public class MicroDataRecorder {
         }
     }
 
-    void recordHousingWealth(int time, double housingWealth) {
+    void recordHousingNetWealth(int time, double housingNetWealth) {
         if (time % freqOfMicroPrinting == 0 && time >= timeToStartMicroPrinting) {
-            outfileHousingWealth.format(Locale.ROOT, "; %.2f", housingWealth);
+            outfileHousingNetWealth.format(Locale.ROOT, "; %.2f", housingNetWealth);
         }
     }
 
@@ -211,7 +211,7 @@ public class MicroDataRecorder {
     }
 
     public void finishRun(boolean recordHouseholdID, boolean recordEmploymentIncome, boolean recordRentalIncome,
-                          boolean recordBankBalance, boolean recordHousingWealth, boolean recordNHousesOwned,
+                          boolean recordBankBalance, boolean recordHousingNetWealth, boolean recordNHousesOwned,
                           boolean recordAge, boolean recordSavingRate) {
         if (recordHouseholdID) {
             outfileHouseholdID.close();
@@ -225,8 +225,8 @@ public class MicroDataRecorder {
         if (recordBankBalance) {
             outfileBankBalance.close();
         }
-        if (recordHousingWealth) {
-            outfileHousingWealth.close();
+        if (recordHousingNetWealth) {
+            outfileHousingNetWealth.close();
         }
         if (recordNHousesOwned) {
             outfileNHousesOwned.close();

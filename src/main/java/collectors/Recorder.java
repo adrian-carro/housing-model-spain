@@ -121,7 +121,7 @@ public class Recorder {
                     + "nonHousingConsumption; rentalConsumption; downpaymentConsumption; "
                     + "principalRepaymentConsumption; interestPaymentConsumption; "
                     // Wealth data
-                    + "totalFinancialWealth; totalHousingWealth");
+                    + "totalFinancialWealth; totalHousingNetWealth; totalHousingGrossWealth");
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -185,7 +185,7 @@ public class Recorder {
                         "%.4f; %.4e; %.2f; %.2f; %.2f; %.4f; %d; %d; %d; %d; %d; %d; %d; %d; %d; %d; " +
                         "%.4f; %.4e; %.2f; %.2f; %.2f; %.4f; %d; %d; %d; %.4f; " +
                         "%d; %d; %d; %d; %d; %.2f; %.2f; %.2f; %.2f; %.2f; %.6f; %.2f; %.2f; %.2f; %.2f; %.2f; " +
-                        "%.2f; %.2f", time,
+                        "%.2f; %.2f; %.2f", time,
                 // Number of households of each type
                 Model.householdStats.getnNonBTLHomeless(),
                 Model.householdStats.getnBTLHomeless(),
@@ -252,7 +252,8 @@ public class Recorder {
                 Model.householdStats.getInterestPaymentHousingConsumption(),
                 // Wealth data
                 Model.householdStats.getTotalFinancialWealth(),
-                Model.householdStats.getTotalHousingWealth());
+                Model.householdStats.getTotalHousingNetWealth(),
+                Model.householdStats.getTotalHousingGrossWealth());
 
         // Write quality band prices to file
         if (recordQualityBandPrice) {
