@@ -73,7 +73,7 @@ public class Model {
      */
     public Model(String configFileName, String outputFolder) {
         config = new Config(configFileName);
-        prng = new MersenneTwister(config.SEED);
+        prng = new MersenneTwister();
 
         demographics = new Demographics(prng);
         construction = new Construction(prng);
@@ -117,6 +117,9 @@ public class Model {
 
         // Perform config.N_SIMS simulations
         for (nSimulation = 1; nSimulation <= config.N_SIMS; nSimulation += 1) {
+
+            // For each simulation, set the seed for the random number generator
+            prng.setSeed(config.SEED * 10 * config.N_SIMS + nSimulation);
 
             // For each simulation, open files for writing single-run results
             recorder.openSingleRunFiles(nSimulation, config.recordQualityBandPrice, config.derivedParams.N_QUALITIES);
