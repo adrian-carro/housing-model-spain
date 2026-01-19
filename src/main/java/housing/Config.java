@@ -44,6 +44,7 @@ public class Config {
     public boolean recordBankBalance;                   // True to write individual household liquid wealth (bank balance) data (after market clearing)
     public boolean recordHousingNetWealth;              // True to write individual household housing net wealth data (after market clearing)
     public boolean recordNHousesOwned;                  // True to write individual household number of houses owned data (after market clearing)
+    public boolean recordHousingStatus;                 // True to write individual household housing status data (after market clearing) (boolean)
     public boolean recordAge;                           // True to write individual household age of the household representative person
     public boolean recordSavingRate;                    // True to write individual household saving rate data [1 - (taxExpenses + housing expenses(except deposits) + essentialConsumption + nonEssentialConsumption)/monthlyGrossTotalIncome]
 

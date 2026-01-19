@@ -124,7 +124,8 @@ public class Model {
                     config.recordNBidUpFrequency);
             microDataRecorder.openSingleRunSingleVariableFiles(nSimulation, config.recordHouseholdID,
                     config.recordEmploymentIncome, config.recordRentalIncome, config.recordBankBalance,
-                    config.recordHousingNetWealth, config.recordNHousesOwned, config.recordAge, config.recordSavingRate);
+                    config.recordHousingNetWealth, config.recordNHousesOwned, config.recordHousingStatus,
+                    config.recordAge, config.recordSavingRate);
 
             // For each simulation, initialise both houseSaleMarket and houseRentalMarket variables (including HPI)
             init();
@@ -151,7 +152,7 @@ public class Model {
             transactionRecorder.finishRun(config.recordTransactions, config.recordNBidUpFrequency);
             microDataRecorder.finishRun(config.recordHouseholdID, config.recordEmploymentIncome,
                     config.recordRentalIncome, config.recordBankBalance, config.recordHousingNetWealth,
-                    config.recordNHousesOwned, config.recordAge, config.recordSavingRate);
+                    config.recordNHousesOwned, config.recordHousingStatus, config.recordAge, config.recordSavingRate);
         }
 
         // After the last simulation, clean up
