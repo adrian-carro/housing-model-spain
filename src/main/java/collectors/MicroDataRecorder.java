@@ -19,6 +19,7 @@ public class MicroDataRecorder {
     private PrintWriter     outfileRentalIncome;
     private PrintWriter     outfileBankBalance;
     private PrintWriter     outfileHousingNetWealth;
+    private PrintWriter     outfileTotalDebt;
     private PrintWriter     outfileNHousesOwned;
     private PrintWriter     outfileHousingStatus;
     private PrintWriter     outfileAge;
@@ -39,9 +40,9 @@ public class MicroDataRecorder {
 
     public void openSingleRunSingleVariableFiles(int nRun, boolean recordHouseholdID, boolean recordEmploymentIncome,
                                                  boolean recordRentalIncome, boolean recordBankBalance,
-                                                 boolean recordHousingNetWealth, boolean recordNHousesOwned,
-                                                 boolean recordHousingStatus, boolean recordAge,
-                                                 boolean recordSavingRate) {
+                                                 boolean recordHousingNetWealth, boolean recordTotalDebt,
+                                                 boolean recordNHousesOwned, boolean recordHousingStatus,
+                                                 boolean recordAge, boolean recordSavingRate) {
         if (recordHouseholdID) {
             try {
                 outfileHouseholdID = new PrintWriter(outputFolder + "HouseholdID-run" + nRun
@@ -77,6 +78,14 @@ public class MicroDataRecorder {
         if (recordHousingNetWealth) {
             try {
                 outfileHousingNetWealth = new PrintWriter(outputFolder + "HousingNetWealth-run" + nRun
+                        + ".csv", "UTF-8");
+            } catch (FileNotFoundException | UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        if (recordTotalDebt) {
+            try {
+                outfileTotalDebt = new PrintWriter(outputFolder + "TotalDebt-run" + nRun
                         + ".csv", "UTF-8");
             } catch (FileNotFoundException | UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -118,9 +127,9 @@ public class MicroDataRecorder {
 
     void timeStampSingleRunSingleVariableFiles(int time, boolean recordHouseholdID, boolean recordEmploymentIncome,
                                                boolean recordRentalIncome, boolean recordBankBalance,
-                                               boolean recordHousingNetWealth, boolean recordNHousesOwned,
-                                               boolean recordHousingStatus, boolean recordAge,
-                                               boolean recordSavingRate) {
+                                               boolean recordHousingNetWealth, boolean recordTotalDebt,
+                                               boolean recordNHousesOwned, boolean recordHousingStatus,
+                                               boolean recordAge, boolean recordSavingRate) {
         if (time % freqOfMicroPrinting == 0 && time >= timeToStartMicroPrinting) {
             if (recordHouseholdID) {
                 if (time != timeToStartMicroPrinting) {
@@ -151,6 +160,12 @@ public class MicroDataRecorder {
                     outfileHousingNetWealth.println("");
                 }
                 outfileHousingNetWealth.print(time);
+            }
+            if (recordTotalDebt) {
+                if (time != timeToStartMicroPrinting) {
+                    outfileTotalDebt.println("");
+                }
+                outfileTotalDebt.print(time);
             }
             if (recordNHousesOwned) {
                 if (time != timeToStartMicroPrinting) {
@@ -209,6 +224,12 @@ public class MicroDataRecorder {
         }
     }
 
+    void recordTotalDebt(int time, double totalDebt) {
+        if (time % freqOfMicroPrinting == 0 && time >= timeToStartMicroPrinting) {
+            outfileTotalDebt.format(Locale.ROOT, "; %.2f", totalDebt);
+        }
+    }
+
     void recordNHousesOwned(int time, int nHousesOwned) {
         if (time % freqOfMicroPrinting == 0 && time >= timeToStartMicroPrinting) {
             outfileNHousesOwned.format(Locale.ROOT, "; %d", nHousesOwned);
@@ -234,8 +255,9 @@ public class MicroDataRecorder {
     }
 
     public void finishRun(boolean recordHouseholdID, boolean recordEmploymentIncome, boolean recordRentalIncome,
-                          boolean recordBankBalance, boolean recordHousingNetWealth, boolean recordNHousesOwned,
-                          boolean recordHousingStatus, boolean recordAge, boolean recordSavingRate) {
+                          boolean recordBankBalance, boolean recordHousingNetWealth, boolean recordTotalDebt,
+                          boolean recordNHousesOwned, boolean recordHousingStatus, boolean recordAge,
+                          boolean recordSavingRate) {
         if (recordHouseholdID) {
             outfileHouseholdID.close();
         }
@@ -250,6 +272,9 @@ public class MicroDataRecorder {
         }
         if (recordHousingNetWealth) {
             outfileHousingNetWealth.close();
+        }
+        if (recordTotalDebt) {
+            outfileTotalDebt.close();
         }
         if (recordNHousesOwned) {
             outfileNHousesOwned.close();

@@ -123,8 +123,8 @@ public class HouseholdStats {
         // Time stamp householdStats microDataRecorders
         Model.microDataRecorder.timeStampSingleRunSingleVariableFiles(Model.getTime(), config.recordHouseholdID,
                 config.recordEmploymentIncome, config.recordRentalIncome, config.recordBankBalance,
-                config.recordHousingNetWealth, config.recordNHousesOwned, config.recordHousingStatus,
-                config.recordAge, config.recordSavingRate);
+                config.recordHousingNetWealth, config.recordTotalDebt, config.recordNHousesOwned,
+                config.recordHousingStatus, config.recordAge, config.recordSavingRate);
         // Run through all households counting population in each type and summing their gross incomes
         for (Household h : Model.households) {
             if (h.behaviour.isPropertyInvestor()) {
@@ -168,6 +168,7 @@ public class HouseholdStats {
             // average prices for houses of the same quality and subtracting any remaining principal
             double housingNetWealth = 0.0;
             double housingGrossWealth = 0.0;
+            double totalDebt = 0.0;
             for (Map.Entry<House, PaymentAgreement> entry : h.getHousePayments().entrySet()) {
                 House house = entry.getKey();
                 PaymentAgreement payment = entry.getValue();
@@ -175,6 +176,7 @@ public class HouseholdStats {
                     housingNetWealth += Model.housingMarketStats.getExpAvSalePriceForQuality(house.getQuality())
                             - ((MortgageAgreement) payment).principal;
                     housingGrossWealth += Model.housingMarketStats.getExpAvSalePriceForQuality(house.getQuality());
+                    totalDebt += ((MortgageAgreement) payment).principal;
                 }
             }
             // Add this household's contribution to total financial and housing wealth
@@ -196,6 +198,9 @@ public class HouseholdStats {
             }
             if (config.recordHousingNetWealth) {
                 Model.microDataRecorder.recordHousingNetWealth(Model.getTime(), housingNetWealth);
+            }
+            if (config.recordTotalDebt) {
+                Model.microDataRecorder.recordTotalDebt(Model.getTime(), totalDebt);
             }
             if (config.recordNHousesOwned) {
                 Model.microDataRecorder.recordNHousesOwned(Model.getTime(), h.getNProperties());
