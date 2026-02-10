@@ -186,6 +186,8 @@ public class Model {
         demographics.step();
         // Update number of houses
         construction.step();
+        // Clear the income list within householdStats, to be refilled by household.step()
+        householdStats.clearIncomeList();
         // Updates regional households consumption, housing decisions, and corresponding regional bids and offers
         for(Household h : households) h.step();
         // Reset counters to store credit supply statistics

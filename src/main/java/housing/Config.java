@@ -64,6 +64,7 @@ public class Config {
     double CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_FTB; // Mandatory Central Bank policy: Maximum fraction of mortgages allowed to go over their LTI soft limit
     double CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_HM;  // Mandatory Central Bank policy: Maximum fraction of mortgages allowed to go over their LTI soft limit
     double CENTRAL_BANK_LTI_MAX_FRAC_OVER_SOFT_MAX_BTL; // Mandatory Central Bank policy: Maximum fraction of mortgages allowed to go over their LTI soft limit
+    double CENTRAL_BANK_APPLICATION_INCOME_PERCENTILE;  // Mandatory Central Bank policy: Gross employment income perentile below which no Central Bank policy is applied
     int CENTRAL_BANK_MONTHS_TO_CHECK_SOFT_LIMITS;       // Mandatory Central Bank policy: Months to check for moving averages of fractions of mortgages over their soft limits
     double CENTRAL_BANK_AFFORDABILITY_HARD_MAX;         // Mandatory Central Bank policy: Hard maximum fraction of household's income to be spent on mortgage repayments
     double CENTRAL_BANK_ICR_HARD_MIN;                   // Mandatory Central Bank policy: Hard minimum ratio between (expected) annual rental income and annual interest payments

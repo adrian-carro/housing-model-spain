@@ -22,7 +22,9 @@ public class CentralBank {
     private double      baseRate;
 
     // General soft policies thresholds
-    private int monthsToCheckSoftLimits;            // Months to check for moving average of fraction of mortgages over their soft limit
+    private int         monthsToCheckSoftLimits;                // Months to check for moving average of fraction of mortgages over their soft limit
+    private double      applicationIncomePercentile;            // Income percentile below which BBM policies do not apply
+    private double      applicationIncome;                      // Income level below which BBM policies do not apply, to be updated every time step
 
     // LTV internal policy thresholds
     private double      firstTimeBuyerSoftMaxLTV;               // Loan-To-Value soft maximum for first-time buyer mortgages
@@ -54,6 +56,9 @@ public class CentralBank {
     void init() {
         // Set initial monetary policy
         baseRate = config.CENTRAL_BANK_INITIAL_BASE_RATE;
+        // Set general soft policy thresholds
+        applicationIncomePercentile = 0.0; // TODO: Set these as non-binding initial parameters in config file
+        applicationIncome = 0.0; // TODO: Coherence with the percentile above should be imposed here
         // Set initial LTV mandatory policy thresholds
         firstTimeBuyerSoftMaxLTV = 0.9999; // TODO: Set these as non-binding initial parameters in config file
         firstTimeBuyerMaxFracOverSoftMaxLTV = config.CENTRAL_BANK_LTV_MAX_FRAC_OVER_SOFT_MAX_FTB;
@@ -85,6 +90,9 @@ public class CentralBank {
     public void step(collectors.CoreIndicators coreIndicators, int time) {
 
         if (time >= config.CENTRAL_BANK_POLICY_APPLICATION_TIME) {
+            // Update general soft policy thresholds
+            applicationIncomePercentile = config.CENTRAL_BANK_APPLICATION_INCOME_PERCENTILE;
+            applicationIncome = Model.householdStats.getIncomeLevelFromPercentile(applicationIncomePercentile);
             // Update LTV mandatory policy thresholds
             firstTimeBuyerSoftMaxLTV = config.CENTRAL_BANK_LTV_SOFT_MAX_FTB;
             homeMoverSoftMaxLTV = config.CENTRAL_BANK_LTV_SOFT_MAX_HM;
@@ -141,6 +149,8 @@ public class CentralBank {
     double getBuyToLetMaxFracOverSoftMaxLTI() { return buyToLetMaxFracOverSoftMaxLTI; }
 
     int getMonthsToCheckSoftLimits() { return monthsToCheckSoftLimits; }
+
+    double getApplicationIncome() { return applicationIncome; }
 
     double getHardMaxAffordability() { return hardMaxAffordability; }
 

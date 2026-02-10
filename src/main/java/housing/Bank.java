@@ -657,7 +657,8 @@ public class Bank {
 
     //----- Mortgage policy methods -----//
 
-    double getLoanToValueLimit(boolean isFirstTimeBuyer, boolean isHome, double age) {
+    double getLoanToValueLimit(boolean isFirstTimeBuyer, boolean isHome, double age,
+                               double annualGrossEmploymentIncome) {
 
         // First, the private bank assigns an internal LTV limit according to its internal policy
         double internalLTV;
@@ -706,6 +707,12 @@ public class Bank {
         // If the age of the household is below the application age for LTV policies, then simply return the internally
         // assigned limit
         if (age < centralBank.getApplicationAgeLTV()) {
+            return internalLTV;
+        }
+
+        // If the gross annual employment income of the household is below the application limit for BBM policies, then
+        // simply return the internally assigned limit
+        if (annualGrossEmploymentIncome < centralBank.getApplicationIncome()) {
             return internalLTV;
         }
 
@@ -853,7 +860,21 @@ public class Bank {
      * @param isHome True if the mortgage is to buy a home for the household (non-BTL mortgage)
      * @return The Loan-To-Income ratio limit currently applicable to this type of household
      */
-    double getLoanToIncomeLimit(boolean isFirstTimeBuyer, boolean isHome) {
+    double getLoanToIncomeLimit(boolean isFirstTimeBuyer, boolean isHome, double annualGrossEmploymentIncome) {
+
+        // If the gross annual employment income of the household is below the application limit for BBM policies, then
+        // simply return the internally assigned limit
+        if (annualGrossEmploymentIncome < centralBank.getApplicationIncome()) {
+            if (isHome) {
+                if (isFirstTimeBuyer) {
+                    return firstTimeBuyerHardMaxLTI;
+                } else {
+                    return homeMoverHardMaxLTI;
+                }
+            } else {
+                return buyToLetHardMaxLTI;
+            }
+        }
 
         // If the maximum fractions of mortgages over their soft LTI limits allowed by the Central Bank for FTBs, HMs
         // and BTLs are the same, then the quota is shared by FTBs, HMs and BTLs, instead of having separate quotas
@@ -942,6 +963,11 @@ public class Bank {
     private double getHardMaxAffordability(double monthlyGrossEmploymentIncome) {
         double limitGivenByEssentialConsumption =
                 1.0 - config.ESSENTIAL_NOMINAL_CONSUMPTION / monthlyGrossEmploymentIncome;
+        // If the gross annual employment income of the household is below the application limit for BBM policies, then
+        // simply return the internally assigned limit
+        if (12.0 * monthlyGrossEmploymentIncome < centralBank.getApplicationIncome()) {
+            return Math.min(limitGivenByEssentialConsumption,hardMaxAffordability);
+        }
         return Math.min(limitGivenByEssentialConsumption,
                 Math.min(hardMaxAffordability, centralBank.getHardMaxAffordability()));
     }

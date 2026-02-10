@@ -2,6 +2,8 @@ package collectors;
 
 import housing.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 /**************************************************************************************************
@@ -61,6 +63,7 @@ public class HouseholdStats {
 
     // Other fields
     private double  sumStockYield; // Sum of stock gross rental yields of all currently occupied rental properties
+    private ArrayList<Double> annualGrossEmploymentIncomeList; // ArrayList to store the list of incomes, to be renewed each time step
 
     //-------------------//
     //----- Methods -----//
@@ -87,6 +90,15 @@ public class HouseholdStats {
         totalFinancialWealth = 0.0;
         totalHousingNetWealth = 0.0;
         totalHousingGrossWealth = 0.0;
+        annualGrossEmploymentIncomeList = new ArrayList<>((int)(config.TARGET_POPULATION * 1.2)); // This accounts for fluctuations 20% over the target
+    }
+
+    public void clearIncomeList() {
+        annualGrossEmploymentIncomeList.clear();
+    }
+
+    public void addIncome(double annualGrossEmploymentIncome) {
+        annualGrossEmploymentIncomeList.add(annualGrossEmploymentIncome);
     }
 
     public void record() {
@@ -281,6 +293,19 @@ public class HouseholdStats {
      */
     public void addInterestPaymentHousingConsumption(double amount) {
         interestPaymentHousingConsumptionCounter += amount;
+    }
+
+    /**
+     *
+     */
+    public double getIncomeLevelFromPercentile(double incomePercentile) {
+        if (incomePercentile < 0.0 || incomePercentile > 1.0) {
+            throw new IllegalArgumentException("Percentile must be between 0.0 and 1.0 inclusive!");
+        }
+        Collections.sort(annualGrossEmploymentIncomeList);
+        int rank = (incomePercentile == 0.0) ? 1 : (int) Math.ceil(incomePercentile *
+                annualGrossEmploymentIncomeList.size());
+        return annualGrossEmploymentIncomeList.get(rank - 1);
     }
 
     //----- Getter/setter methods -----//
