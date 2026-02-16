@@ -38,6 +38,7 @@ public class Household implements IHouseOwner {
     private MersenneTwister                 prng;
     private double                          age; // Age of the household representative person
     private double                          bankBalance;
+    private double                          desiredConsumption;
     private double                          savingRate; // (disposableIncome - nonEssentialConsumption)/grossTotalIncome
     private boolean                         isFirstTimeBuyer;
     private boolean                         isBankrupt;
@@ -99,7 +100,7 @@ public class Household implements IHouseOwner {
         bankBalance += monthlyDisposableIncome;
         // Consume according to gross annual income, capped by current bank balance (after disposable income has been
         // added) and by a maximum fraction of the gross annual income that can be consumed a month
-        double desiredConsumption = behaviour.getDesiredConsumption(bankBalance, getAnnualGrossTotalIncome(),
+        desiredConsumption = behaviour.getDesiredConsumption(bankBalance, getAnnualGrossTotalIncome(),
                 monthlyDisposableIncome);
         desiredConsumption = Math.min(desiredConsumption,
                 getAnnualGrossTotalIncome()*config.MAXIMUM_CONSUMPTION_FRACTION);
@@ -674,6 +675,8 @@ public class Household implements IHouseOwner {
         }
         return(0.0);        
     }
+
+    public double getDesiredConsumption() { return desiredConsumption; }
 
     public double getSavingRate() { return savingRate; }
 
